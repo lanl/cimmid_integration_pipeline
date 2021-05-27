@@ -1,5 +1,7 @@
 # Toy Integration Model
 
+TO DO: Add `setup.sh` that needs to be run first time we run experiment from a new directory/server to create required directories, set up virtual environment, git clone code/models, etc.
+
 To run an experiment, run following:
 
     ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM
