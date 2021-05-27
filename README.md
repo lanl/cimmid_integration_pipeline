@@ -2,7 +2,9 @@
 
 When running integrated model (or experiment) first time from a new directory (or cluster), run following to create required directories, set up virtual environment, git clone code/models, etc.
 
-    ./setup.sh PATH_TO_MINICONDA_INSTALLATION (e.g., '/projects/cimmid/miniconda3' for Darwin)
+    ./setup.sh PATH_TO_MINICONDA_INSTALLATION
+
+    PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 
 To run an experiment, run following:
 
