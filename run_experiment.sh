@@ -24,7 +24,7 @@ done
 
 # Set paths
 # TO DO: When really coupling models, will need to deal with input data paths for all models. Skipping for toy model as they likely do not connect for now. Connecting even trivially may be a good next step. Need to talk to modeling teams. Katy is going to talk to Jon and Jeff about this.
-BASE_PATH="/projects/cimmid/users/nidhip/integration/toy_model"
+BASE_PATH="$PWD/.."  # "/projects/cimmid/users/nidhip/integration/toy_model"
 HYDROPOP_MODEL_PATH="$BASE_PATH/hydropop/toy_model"
 HUMAN_EPI_MODEL_PATH="$BASE_PATH/dengue_model/Epi_SEIR"
 EXPERIMENTS_PATH="$BASE_PATH/experiments"
