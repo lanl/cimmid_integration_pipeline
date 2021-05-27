@@ -33,6 +33,9 @@ sed -i.bak "s|HUMAN_EPI_MODEL_OUTPUT_PATH|$HUMAN_EPI_MODEL_OUTPUT_PATH|g" $CONFI
 # Run model
 #conda activate /projects/cimmid/miniconda3/envs/human-epi-env
 source activate /projects/cimmid/miniconda3/envs/human-epi-env
+if [ -f $HUMAN_EPI_LOGS_PATH/* ]; then
+    rm $HUMAN_EPI_LOGS_PATH/*
+fi
 sh run_human_epi_model.sh $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME 0 > $HUMAN_EPI_LOGS_PATH/human_epi.out
 conda deactivate
 
