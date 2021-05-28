@@ -14,8 +14,13 @@ def get_run_number(exp_dir):
     for run_dir in run_dirs:
         run_nums.append(int(run_dir.replace(exp_dir, '')[2:-1]))
     run_nums.sort()
-    
-    print(run_nums[-1] + 1)
+ 
+    # If first run
+    if len(run_dirs) == 0:
+        print(0)
+    # If not first run
+    else: 
+        print(run_nums[-1] + 1)
 
 if __name__ == '__main__':
     get_run_number(sys.argv[1])
