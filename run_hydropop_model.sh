@@ -7,12 +7,14 @@
 # 3. Name of the hydropop model config file
 # 4. Path where hydropop output will be stored for the current experiment run
 # 5. Path where hydropop log will be stored for the current experiment run
+# 6. Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 
 HYDROPOP_MODEL_PATH=$1
 CONFIG_PATH=$2
 HYDROPOP_CONFIG_FILENAME=$3
 HYDROPOP_MODEL_OUTPUT_PATH=$4
 HYDROPOP_LOGS_PATH=$5
+MINICONDA_PATH=$6
 
 # Change to directory where hydropop model is cloned
 pushd $HYDROPOP_MODEL_PATH > /dev/null
@@ -31,9 +33,9 @@ sed -i.bak "s|HYDROPOP_LOGS_PATH|$HYDROPOP_LOGS_PATH|g" $CONFIG_PATH/$HYDROPOP_C
 sed -i.bak "s|HYDROPOP_MODEL_OUTPUT_PATH|$HYDROPOP_MODEL_OUTPUT_PATH|g" $CONFIG_PATH/$HYDROPOP_CONFIG_FILENAME
 
 # Run model
-#conda activate /projects/cimmid/miniconda3/envs/hpu
-source activate /projects/cimmid/miniconda3/envs/hpu
-python e3sm_to_mosq_model_inputs.py --config $CONFIG_PATH/$HYDROPOP_CONFIG_FILENAME > $HYDROPOP_LOGS_PATH/hydropop.out
+#conda activate "$MINICONDA_PATH/envs/hpu"
+source activate "$MINICONDA_PATH/envs/hpu"
+python e3sm_to_mosq_model_inputs.py --config $CONFIG_PATH/$HYDROPOP_CONFIG_FILENAME
 conda deactivate
 
 # Change back to integration directory

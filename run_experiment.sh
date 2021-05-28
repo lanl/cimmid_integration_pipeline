@@ -2,7 +2,8 @@
 
 ############################################################################################
 # Runs an experiment (integrarted model). 
-# Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM
+# Usage: ./run_experiment.sh MINICONDA_PATH -r RUN_NUM -m MODEL_TO_START_FROM
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 # -r: Run number (optional)
 # -m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)
 ############################################################################################
@@ -11,8 +12,18 @@
 module unload gcc
 module load gcc/7.2.0
 
+# Check for correct number of arguments.
+if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
+    echo "Usage: ./run_experiment.sh MINICONDA_PATH -r RUN_NUM -m MODEL_TO_START_FROM"
+    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)"
+    echo "-r: Run number (optional)"
+    echo "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
+    exit
+fi
+
 # ADD CIMMID miniconda path to PATH
-export PATH="/projects/cimmid/miniconda3/bin:$PATH"
+MINICONDA_PATH=$1
+export PATH="$MINICONDA_PATH/bin:$PATH"
 
 # Get run number from command line arguments if specified
 while getopts ":r:m:" opt; do
@@ -24,9 +35,9 @@ done
 
 # Set paths
 # TO DO: When really coupling models, will need to deal with input data paths for all models. Skipping for toy model as they likely do not connect for now. Connecting even trivially may be a good next step. Need to talk to modeling teams. Katy is going to talk to Jon and Jeff about this.
-BASE_PATH="$PWD/.."  # "/projects/cimmid/users/nidhip/integration/toy_model"
-HYDROPOP_MODEL_PATH="$BASE_PATH/hydropop/toy_model"
-HUMAN_EPI_MODEL_PATH="$BASE_PATH/dengue_model/Epi_SEIR"
+BASE_PATH="$PWD/"
+HYDROPOP_MODEL_PATH="$BASE_PATH/models/hydropop/toy_model"
+HUMAN_EPI_MODEL_PATH="$BASE_PATH/models/dengue_model/Epi_SEIR"
 EXPERIMENTS_PATH="$BASE_PATH/experiments"
 RUNS_PATH="$EXPERIMENTS_PATH/runs"
 if [ "$RUN_NUM" == "" ]; then
@@ -61,7 +72,7 @@ sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 # TO DO: Need to make the script runnable from specified model
 ##### Run hydropop model
 echo "$(date): Running hydropop model.."
-sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH
+sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
 SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
 if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
     echo "$(date): Hydropop model completed successfully."
@@ -69,11 +80,12 @@ else
     echo "$(date): ERROR!! hydropop model failed."
     cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
     # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+    exit
 fi
 
 ##### Run human epi model
 echo "$(date): Running human epi model.."
-sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH
+sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
 NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
 NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
 if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
@@ -82,4 +94,5 @@ else
     echo "$(date): ERROR!! human epi model failed."
     cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
     # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+    exit
 fi

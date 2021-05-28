@@ -7,12 +7,14 @@
 # 3. Name of the human epi model config file
 # 4. Path where human epi output will be stored for the current experiment run
 # 5. Path where human epi log will be stored for the current experiment run
+# 6. Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 
 HUMAN_EPI_MODEL_PATH=$1
 CONFIG_PATH=$2
 HUMAN_EPI_CONFIG_FILENAME=$3
 HUMAN_EPI_MODEL_OUTPUT_PATH=$4
 HUMAN_EPI_LOGS_PATH=$5
+MINICONDA_PATH=$6
 
 # Change to directory where human epi model is cloned
 pushd $HUMAN_EPI_MODEL_PATH > /dev/null
@@ -31,8 +33,8 @@ sed -i.bak "s|HUMAN_EPI_LOGS_PATH|$HUMAN_EPI_LOGS_PATH|g" $CONFIG_PATH/$HUMAN_EP
 sed -i.bak "s|HUMAN_EPI_MODEL_OUTPUT_PATH|$HUMAN_EPI_MODEL_OUTPUT_PATH|g" $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME
 
 # Run model
-#conda activate /projects/cimmid/miniconda3/envs/human-epi-env
-source activate /projects/cimmid/miniconda3/envs/human-epi-env
+#conda activate "$MINICONDA_PATH/envs/human-epi-env"
+source activate "$MINICONDA_PATH/envs/human-epi-env"
 logfiles=`shopt -s nullglob dotglob; echo $HUMAN_EPI_LOGS_PATH/*`
 if [ "$logfiles" != "" ]; then
     rm $HUMAN_EPI_LOGS_PATH/*
