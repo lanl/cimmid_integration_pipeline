@@ -2,12 +2,21 @@
 
 ###################################################################################################
 # Needs to run the first time setting up run environment and experiment.
-# Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION
+# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 ###################################################################################################
 
 # load/unload modules
 module unload gcc
 module load gcc/7.2.0
+
+# Check for correct number of arguments.
+if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
+    echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
+    echo "Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION"
+    echo -e "PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    exit
+fi
 
 # ADD CIMMID miniconda path to PATH.
 # TO DO: miniconda is already installed on Darwin. It will need to be installed on other clusters. Check with Jon about installation.
