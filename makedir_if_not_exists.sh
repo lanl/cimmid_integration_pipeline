@@ -7,8 +7,9 @@
 ############################################################################################
 
 if [ "$#" -lt 1 ] ; then
+    echo -e "ERROR!! Requires one argument. See usage information below:\n"
     echo "Usage: ./makedir_if_not_exists.sh DIRECTORY_NAME"
-    echo "DIRECTORY_NAME: Name of the directory that needs to exist"
+    echo -e "DIRECTORY_NAME: Name of the directory that needs to exist\n"
     exit
 fi
 

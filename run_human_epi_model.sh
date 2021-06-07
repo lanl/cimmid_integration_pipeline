@@ -1,13 +1,27 @@
 #!/bin/sh
 
+############################################################################################
 # Runs human epi model
-# Takes 5 arguments
-# 1. Path where human epi model is cloned from git
-# 2. Path where config files are stored for the current experiment run
-# 3. Name of the human epi model config file
-# 4. Path where human epi output will be stored for the current experiment run
-# 5. Path where human epi log will be stored for the current experiment run
-# 6. Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# USAGE: ./run_human_epi_model.sh HUMAN_EPI_MODEL_PATH CONFIG_PATH HUMAN_EPI_CONFIG_FILENAME HUMAN_EPI_MODEL_OUTPUT_PATH HUMAN_EPI_LOGS_PATH MINICONDA_PATH
+# HUMAN_EPI_MODEL_PATH: Path where human epi model is cloned from git
+# CONFIG_PATH: Path where config files are stored for the current experiment run
+# HUMAN_EPI_CONFIG_FILENAME: Name of the human epi model config file
+# HUMAN_EPI_MODEL_OUTPUT_PATH: Path where human epi output will be stored for the current experiment run
+# HUMAN_EPI_LOGS_PATH: Path where human epi log will be stored for the current experiment run
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+############################################################################################
+
+if [ "$#" -lt 6 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] ; then
+    echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
+    echo "USAGE: ./run_human_epi_model.sh HUMAN_EPI_MODEL_PATH CONFIG_PATH HUMAN_EPI_CONFIG_FILENAME HUMAN_EPI_MODEL_OUTPUT_PATH HUMAN_EPI_LOGS_PATH MINICONDA_PATH"
+    echo "HUMAN_EPI_MODEL_PATH: Path where human epi model is cloned from git"
+    echo "CONFIG_PATH: Path where config files are stored for the current experiment run"
+    echo "HUMAN_EPI_CONFIG_FILENAME: Name of the human epi model config file"
+    echo "HUMAN_EPI_MODEL_OUTPUT_PATH: Path where human epi output will be stored for the current experiment run"
+    echo "HUMAN_EPI_LOGS_PATH: Path where human epi log will be stored for the current experiment run"
+    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    exit
+fi
 
 HUMAN_EPI_MODEL_PATH=$1
 CONFIG_PATH=$2

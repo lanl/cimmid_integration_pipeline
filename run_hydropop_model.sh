@@ -1,13 +1,27 @@
 #!/bin/sh
 
-# Runs human epi model
-# Takes 5 arguments
-# 1. Path where hydropop model is cloned from git
-# 2. Path where config files are stored for the current experiment run
-# 3. Name of the hydropop model config file
-# 4. Path where hydropop output will be stored for the current experiment run
-# 5. Path where hydropop log will be stored for the current experiment run
-# 6. Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+############################################################################################
+# Runs hydropop model.
+# USAGE: ./run_hydropop_model.sh HYDROPOP_MODEL_PATH CONFIG_PATH HYDROPOP_CONFIG_FILENAME HYDROPOP_MODEL_OUTPUT_PATH HYDROPOP_LOGS_PATH MINICONDA_PATH 
+# HYDROPOP_MODEL_PATH: Path where hydropop model is cloned from git
+# CONFIG_PATH: Path where config files are stored for the current experiment run
+# HYDROPOP_CONFIG_FILENAME: Name of the hydropop model config file
+# HYDROPOP_MODEL_OUTPUT_PATH: Path where hydropop output will be stored for the current experiment run
+# HYDROPOP_LOGS_PATH: Path where hydropop log will be stored for the current experiment run
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+############################################################################################
+
+if [ "$#" -lt 6 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] ; then
+    echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
+    echo "USAGE: ./run_hydropop_model.sh HYDROPOP_MODEL_PATH CONFIG_PATH HYDROPOP_CONFIG_FILENAME HYDROPOP_MODEL_OUTPUT_PATH HYDROPOP_LOGS_PATH MINICONDA_PATH"
+    echo "HYDROPOP_MODEL_PATH: Path where hydropop model is cloned from git"
+    echo "CONFIG_PATH: Path where config files are stored for the current experiment run"
+    echo "HYDROPOP_CONFIG_FILENAME: Name of the hydropop model config file"
+    echo "HYDROPOP_MODEL_OUTPUT_PATH: Path where hydropop output will be stored for the current experiment run"
+    echo "HYDROPOP_LOGS_PATH: Path where hydropop log will be stored for the current experiment run"
+    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    exit
+fi
 
 HYDROPOP_MODEL_PATH=$1
 CONFIG_PATH=$2
