@@ -32,6 +32,16 @@ do
 done
 shift $(( OPTIND - 1 ))
 
+# If Model to start this run from is not provided, start form begining.
+if [ -z "$MODEL_TO_START_FROM" ]; then
+    MODEL_TO_START_FROM='hydropop'
+fi
+# Check if model to start this run from is correct.
+if ! [ "$MODEL_TO_START_FROM" = "hydropop" ] && ! [ "$MODEL_TO_START_FROM" = "mosquito_pop" ] && ! [ "$MODEL_TO_START_FROM" = "human_epi" ]; then
+    echo -e "ERROR!! Model to start this run from (option -m) must be hydropop, mosquito_pop, or human_epi."
+    exit
+fi
+
 # Check for correct number of arguments.
 if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
     echo -e "ERROR!! MINICONDA_PATH must be specified. See usage information below:\n"
@@ -96,43 +106,76 @@ sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 # Set config files
 # TO DO: Need to figure out how to set paramter values in config files.
 
-# TO DO: Need to make the script runnable from specified model
-##### Run hydropop model
-echo "$(date): Running hydropop model.."
-sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
-SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
-if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
-    echo "$(date): Hydropop model completed successfully."
+# Run hydropop model
+RUN_HYDROPOP_MODEL() {
+    echo "$(date): Running hydropop model.."
+    sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
+    SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
+    if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
+        echo "$(date): Hydropop model completed successfully."
+    else
+        echo "$(date): ERROR!! hydropop model failed."
+        cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi      
+}
+
+# Run mosquito pop model
+RUN_MOSQUITO_POP_MODEL() {
+    echo "$(date): Running mosquito pop model.."
+    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
+    SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
+    if ! [ -z "$SUCCESS_FLAG" ]; then
+        echo "$(date): Mosquito pop model completed successfully."
+    else
+        echo "$(date): ERROR!! Mosquito pop model failed."
+        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi
+}
+
+# Run Run human epi model
+RUN_HUMAN_EPI_MODEL() {
+    echo "$(date): Running human epi model.."
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
+    NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
+    if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
+        echo "$(date): Human epi model completed successfully."
+    else
+        echo "$(date): ERROR!! human epi model failed."
+        cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi
+}
+
+# Run experiemnt from the specified model
+if [ "$MODEL_TO_START_FROM" = "hydropop" ]; then
+    RUN_HYDROPOP_MODEL
+    RUN_MOSQUITO_POP_MODEL
+    RUN_HUMAN_EPI_MODEL
+elif [ "$MODEL_TO_START_FROM" = "mosquito_pop" ]; then
+    # Check if previous model was successful. If so start experiment from mosquito pop model. If not, raise an error.
+    SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
+    if ! [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
+        echo -e "ERROR!! Hydropop model was not successful for run $RUN_NUM. Try starting the run from hydropop model."
+        exit
+    fi
+    RUN_MOSQUITO_POP_MODEL
+    RUN_HUMAN_EPI_MODEL
+elif [ "$MODEL_TO_START_FROM" = "human_epi" ]; then
+    # Check if previous model was successful. If so start experiment from human epi model. If not, raise an error.
+    SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
+    if [ -z "$SUCCESS_FLAG" ]; then
+        echo -e "ERROR!! mosquito pop model was not successful for run $RUN_NUM. Try starting the run from mosquito pop model."
+        exit
+    fi
+    RUN_HUMAN_EPI_MODEL
 else
-    echo "$(date): ERROR!! hydropop model failed."
-    cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
-    # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+    echo -e "ERROR!! Model to start this run from (option -m) must be hydropop, mosquito_pop, or human_epi."
     exit
 fi
 
-##### Run mosquito pop model
-echo "$(date): Running mosquito pop model.."
-sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
-SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
-if ! [ -z "$SUCCESS_FLAG" ]; then
-    echo "$(date): Mosquito pop model completed successfully."
-else
-    echo "$(date): ERROR!! Mosquito pop model failed."
-    cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
-    # TO DO: Need to email the relevant team (instead of nidhip) on failure.
-    exit
-fi
-
-##### Run human epi model
-echo "$(date): Running human epi model.."
-sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
-NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
-NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
-if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
-    echo "$(date): Human epi model completed successfully."
-else
-    echo "$(date): ERROR!! human epi model failed."
-    cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
-    # TO DO: Need to email the relevant team (instead of nidhip) on failure.
-    exit
-fi
