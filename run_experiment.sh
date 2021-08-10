@@ -2,22 +2,40 @@
 
 ############################################################################################
 # Runs an experiment (integrarted model). 
-# Usage: ./run_experiment.sh MINICONDA_PATH -r RUN_NUM -m MODEL_TO_START_FROM
-# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH
 # -r: Run number (optional)
 # -m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 ############################################################################################
 
 # load/unload modules
 module unload gcc
 module load gcc/7.2.0
 
+# Print script usage
+PRINT_USAGE() {
+    echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH"
+    echo "-r: Run number (optional; positive integer)"
+    echo -e "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
+    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+}
+
+# Get run number from command line arguments if specified
+while getopts "r:m:" opt
+do
+    case $opt in
+        (r) RUN_NUM=$OPTARG
+            ;;
+        (m) MODEL_TO_START_FROM=$OPTARG
+            ;;
+    esac
+done
+shift $(( OPTIND - 1 ))
+
 # Check for correct number of arguments.
 if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
-    echo "Usage: ./run_experiment.sh MINICONDA_PATH -r RUN_NUM -m MODEL_TO_START_FROM"
-    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)"
-    echo "-r: Run number (optional)"
-    echo "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
+    echo -e "ERROR!! MINICONDA_PATH must be specified. See usage information below:\n"
+    PRINT_USAGE
     exit
 fi
 
@@ -25,35 +43,42 @@ fi
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 
-# Get run number from command line arguments if specified
-while getopts ":r:m:" opt; do
-    case $opt in
-        (r) RUN_NUM=$OPTARG;;
-        (m) MODEL_TO_START_FROM=$OPTARG;;
-    esac
-done
-
 # Set paths
 # TO DO: When really coupling models, will need to deal with input data paths for all models. Skipping for toy model as they likely do not connect for now. Connecting even trivially may be a good next step. Need to talk to modeling teams. Katy is going to talk to Jon and Jeff about this.
 BASE_PATH="$PWD/"
 HYDROPOP_MODEL_PATH="$BASE_PATH/models/hydropop/toy_model"
-HUMAN_EPI_MODEL_PATH="$BASE_PATH/models/dengue_model/Epi_SEIR"
+MOSQUITO_POP_MODEL_PATH="$BASE_PATH/models/mosquito-toy-model"
+HUMAN_EPI_MODEL_PATH="$BASE_PATH/models/human_epi_models/Epi_SEIR"
 EXPERIMENTS_PATH="$BASE_PATH/experiments"
 RUNS_PATH="$EXPERIMENTS_PATH/runs"
 if [ "$RUN_NUM" == "" ]; then
     RUN_NUM=$(python get_run_num.py $RUNS_PATH 2>&1)
 fi
+
+# Check if run number is integer
+#if ! [ "$RUN_NUM" =~ ^[0-9]+$ ] ; then
+if ! [ "$RUN_NUM" -ge 0 ] ; then
+    echo -e "ERROR!! RUN_NUM has to be a positive integer. See usage information below:\n"
+    PRINT_USAGE
+    exit
+fi
+
 CURRENT_RUN_PATH="$RUNS_PATH/r$RUN_NUM"
 CONFIG_PATH=$CURRENT_RUN_PATH/config
 OUTPUT_PATH=$CURRENT_RUN_PATH/output
 HYDROPOP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/HPU_forcing_data
+MOSQUITO_POP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/mosquito_pop_output
 HUMAN_EPI_MODEL_OUTPUT_PATH=$OUTPUT_PATH/human_model_output
 LOGS_PATH=$CURRENT_RUN_PATH/logs
 HYDROPOP_LOGS_PATH=$LOGS_PATH/hydropop
+MOSQUITO_POP_LOGS_PATH=$LOGS_PATH/mosquito_pop
 HUMAN_EPI_LOGS_PATH=$LOGS_PATH/human_epi
+
+MOSQUITO_POP_INPUT_PATH="$MOSQUITO_POP_MODEL_PATH/input"
 
 # Config file names
 HYDROPOP_CONFIG_FILENAME='hp_config_darwin.yaml'
+MOSQUITO_POP_CONFIG_FILENAME='mosq_config.yaml'
 HUMAN_EPI_CONFIG_FILENAME='human_epi_config.yaml'
 
 # Create run directories
@@ -61,9 +86,11 @@ sh makedir_if_not_exists.sh $CURRENT_RUN_PATH
 sh makedir_if_not_exists.sh $CONFIG_PATH
 sh makedir_if_not_exists.sh $OUTPUT_PATH
 sh makedir_if_not_exists.sh $HYDROPOP_MODEL_OUTPUT_PATH
+sh makedir_if_not_exists.sh $MOSQUITO_POP_MODEL_OUTPUT_PATH
 sh makedir_if_not_exists.sh $HUMAN_EPI_MODEL_OUTPUT_PATH
 sh makedir_if_not_exists.sh $LOGS_PATH
 sh makedir_if_not_exists.sh $HYDROPOP_LOGS_PATH
+sh makedir_if_not_exists.sh $MOSQUITO_POP_LOGS_PATH
 sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 
 # Set config files
@@ -79,6 +106,19 @@ if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
 else
     echo "$(date): ERROR!! hydropop model failed."
     cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+    # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+    exit
+fi
+
+##### Run mosquito pop model
+echo "$(date): Running mosquito pop model.."
+sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
+SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
+if ! [ -z "$SUCCESS_FLAG" ]; then
+    echo "$(date): Mosquito pop model completed successfully."
+else
+    echo "$(date): ERROR!! Mosquito pop model failed."
+    cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
     # TO DO: Need to email the relevant team (instead of nidhip) on failure.
     exit
 fi

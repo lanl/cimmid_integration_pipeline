@@ -43,17 +43,35 @@ conda create --name hpu python=3.8
 source activate hpu
 conda install -c conda-forge mamba
 mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
+conda deactivate
+echo ""
+
+# Git clone mosquito pop model
+echo "$(date): cloning mosquito pop model.."
+cd $MODELS_PATH
+git clone git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git
+echo "$(date): creating virtual environment for mosquito pop model.."
+conda create --name mosq-R python=3.8
+#conda activate mosq-R
+source activate mosq-R
+conda install -c conda-forge mamba
+conda install -c conda-forge r r-logger
+conda install -c conda-forge r r-yaml
+conda install -c conda-forge r r-sp
+conda install -c conda-forge r r-rgdal
+conda deactivate
 echo ""
 
 # Git clone human epi model
 echo "$(date): cloning human epi model.."
-git clone git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/dengue_model.git
+git clone git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git
 echo "$(date): creating virtual environment for human epi model.."
 conda create --name human-epi-env python=3.8.3
 #conda activate human-epi-env
 source activate human-epi-env
 conda install --channel conda-forge numpy pyyaml pandas scipy pyarrow matplotlib sphinx
 cd $BASE_PATH
+conda deactivate
 echo ""
 
 # Create experiments and run directories

@@ -34,9 +34,9 @@ MINICONDA_PATH=$6
 pushd $HYDROPOP_MODEL_PATH > /dev/null
 
 # Checkout the given branch and get latest commit id
-git checkout 1-update_config_file_for_integration --quiet > /dev/null
+git checkout master --quiet > /dev/null
 git pull > /dev/null
-echo "$(date): Pulled branch 1-update_config_file_for_integration.."
+echo "$(date): Pulled branch master.."
 latest_hydropop_model_commit_id=`git log --format="%H" -n 1`
 echo "$(date): Latest commit id is $latest_hydropop_model_commit_id.."
 
