@@ -37,8 +37,7 @@ MINICONDA_PATH=$7
 pushd $MOSQUITO_POP_MODEL_PATH > /dev/null
 
 # Checkout the given branch and get latest commit id
-#git checkout master --quiet > /dev/null
-git checkout 1-config_file_changes_for_integration --quiet > /dev/null 
+git checkout master --quiet > /dev/null
 git pull > /dev/null
 echo "$(date): Pulled branch master.."
 latest_mosquito_pop_model_commit_id=`git log --format="%H" -n 1`
