@@ -46,6 +46,18 @@ mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
 conda deactivate
 echo ""
 
+# Git clone ELM
+echo "$(date): cloning ELM.."
+cd $MODELS_PATH
+git clone git@gitlab.lanl.gov:cimmid/earth_system_modeling/ELM_Disease.git
+echo "$(date): creating virtual environment for ELM.."
+conda create --name elm python=3.6 r-base=3.6 r-essentials=3.6 rpy2 pandas r-ncdf4 mpi4py pyyaml
+#conda activate elm
+source activate elm
+conda install -c conda-forge tzlocal
+conda deactivate
+echo ""
+
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
 cd $MODELS_PATH
