@@ -19,7 +19,6 @@ if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
 fi
 
 # ADD CIMMID miniconda path to PATH.
-# TO DO: miniconda is already installed on Darwin. It will need to be installed on other clusters. Check with Jon about installation.
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
