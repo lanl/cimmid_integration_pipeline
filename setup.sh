@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ###################################################################################################
-# Needs to run the first time setting up run environment and experiment.
+# Needs to be run the first time to set up run environment and experiment.
 # Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION
 # PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 ###################################################################################################
