@@ -26,6 +26,7 @@ TURQUOISE_CLUSTER_LOGIN_NODE=$1
 PATH_TO_BARE_DROPZONE_REPO_ON_TURQUOISE_CLUSTER=$2
 
 mkdir $GITLAB_WORKING_REPO_NAME
+cd $GITLAB_WORKING_REPO_NAME
 
 # Git clone integration model
 echo "$(date): cloning integration model.."
