@@ -1,0 +1,15 @@
+TURQUOISE_NET:
+    LOGIN_NODE: "ba-fe.lanl.gov"
+    PROJECT_ROOT: "/turquoise/users/nidhip/projects/cimmid/integration"
+    PATH_TO_MINICONDA_INSTALLATION: "/turquoise/users/nidhip/miniconda3"
+    BARE_DROPZONE_REPO_PATH: "bare_dropzone_repos"  # Relative path in PROJECT_ROOT
+
+YELLOW_NET:
+    PROJECT_ROOT: "/projects/cimmid/users/nidhip/integration/toy_model/toy_model"
+    PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3"
+    GITLAB_WORKING_REPO_PATH: "gitlab_working_repos"  # Relative path in PROJECT_ROOT
+
+INTEGRATION_REPO: "git@gitlab.lanl.gov:cimmid/integration/toy_model.git"
+HYDROPOP_REPO: "git@gitlab.lanl.gov:cimmid/hydropop.git"
+MOSQUITO_POP_REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
+EPI_MODEL_REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
