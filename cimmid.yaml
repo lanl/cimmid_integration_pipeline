@@ -10,6 +10,10 @@ YELLOW_NET:
     GITLAB_WORKING_REPO_PATH: "gitlab_working_repos"  # Relative path in PROJECT_ROOT
 
 INTEGRATION_REPO: "git@gitlab.lanl.gov:cimmid/integration/toy_model.git"
+INTEGRATION_BRANCH: "2-move_to_badger"
 HYDROPOP_REPO: "git@gitlab.lanl.gov:cimmid/hydropop.git"
+HYDROPOP_BRANCH: "master"
 MOSQUITO_POP_REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
+MOSQUITO_POP_BRANCH: "master"
 EPI_MODEL_REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
+EPI_MODEL_BRANCH: "master"
