@@ -9,8 +9,7 @@
 ##################################################################################################################################################################################
 
 # load/unload modules
-module unload gcc
-module load gcc/7.2.0
+module load gcc
 
 # Check for correct number of arguments.
 if [ "$#" -lt 2 ] || ! [ -d "$1" ] || ! [ -f "$2" ]; then
@@ -101,3 +100,5 @@ git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 echo "$(date): done setting up working repo for epi model .."
 echo ""
+
+conda deactivate
