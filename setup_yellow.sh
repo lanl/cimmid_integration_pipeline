@@ -54,6 +54,7 @@ INTEGRATION_REPO=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_REPO`
 git clone $INTEGRATION_REPO
 INTEGRATION_DIR=`echo $INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $INTEGRATION_DIR
+git config pull.rebase false
 # Add mirror
 git remote add --mirror Turq-dev "$TURQUOISE_CLUSTER_LOGIN_NODE:$PATH_TO_BARE_DROPZONE_REPO_ON_TURQUOISE_CLUSTER/$INTEGRATION_DIR"
 export GIT_SSH="$PROJECT_ROOT/turq-ssh-hop.sh"
@@ -68,6 +69,7 @@ HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_REPO`
 git clone $HYDROPOP_REPO
 HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $HYDROPO_DIR
+git config pull.rebase false
 # Add mirror
 git remote add --mirror Turq-dev "$TURQUOISE_CLUSTER_LOGIN_NODE:$PATH_TO_BARE_DROPZONE_REPO_ON_TURQUOISE_CLUSTER/$HYDROPO_DIR" 
 git push Turq-dev
@@ -81,6 +83,7 @@ MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_REPO`
 git clone $MOSQUITO_POP_REPO
 MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $MOSQUITO_POP_DIR
+git config pull.rebase false
 # Add mirror
 git remote add --mirror Turq-dev "$TURQUOISE_CLUSTER_LOGIN_NODE:$PATH_TO_BARE_DROPZONE_REPO_ON_TURQUOISE_CLUSTER/$MOSQUITO_POP_DIR"
 git push Turq-dev
@@ -94,6 +97,7 @@ EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_REPO`
 git clone $EPI_MODEL_REPO
 EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $EPI_DIR
+git config pull.rebase false
 # Add mirror
 git remote add --mirror Turq-dev "$TURQUOISE_CLUSTER_LOGIN_NODE:$PATH_TO_BARE_DROPZONE_REPO_ON_TURQUOISE_CLUSTER/$EPI_DIR"
 git push Turq-dev
