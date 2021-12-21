@@ -75,5 +75,5 @@ mkdir $EPI_BARE_DROPZONE_REPO_PATH
 cd $EPI_BARE_DROPZONE_REPO_PATH
 git --bare init
 
-conda deativate
+conda deactivate
 echo "$(date): done."
