@@ -65,19 +65,33 @@ CONFIG_FILE="$PROJECT_ROOT/$2"
 
 # Read paths from config file
 INTEGRATION_DIR=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-HYDROPO_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+HYDROPOP_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+
 INTEGRATION_BRANCH=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.BRANCH`
-HYDROPO_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.BRANCH`
+HYDROPOP_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.BRANCH`
 MOSQUITO_POP_BRANCH=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.BRANCH`
 EPI_MODEL_BRANCH=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.BRANCH`
+
+HYDROPOP_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.CONFIG_FILENAME`
+MOSQUITO_POP_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.CONFIG_FILENAME`
+EPI_MODEL_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.CONFIG_FILENAME`
+
+HYDROPOP_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.OUTPUT_DIRNAME`
+MOSQUITO_POP_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.OUTPUT_DIRNAME`
+EPI_MODEL_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.OUTPUT_DIRNAME`
+
+HYDROPOP_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.LOG_DIRNAME`
+MOSQUITO_POP_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.LOG_DIRNAME`
+EPI_MODEL_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.LOG_DIRNAME`
+
 conda deactivate
 
 # Set paths
 INTEGRATION_PATH="$PROJECT_ROOT/$INTEGRATION_DIR"
 MODELS_PATH="$INTEGRATION_PATH/models"
-HYDROPOP_MODEL_PATH="$MODELS_PATH/$HYDROPO_DIR"
+HYDROPOP_MODEL_PATH="$MODELS_PATH/$HYDROPOP_DIR"
 MOSQUITO_POP_MODEL_PATH="$MODELS_PATH/$MOSQUITO_POP_DIR"
 HUMAN_EPI_MODEL_PATH="$MODELS_PATH/$EPI_DIR"
 EXPERIMENTS_PATH="$INTEGRATION_PATH/experiments"
@@ -98,17 +112,101 @@ fi
 CURRENT_RUN_PATH="$RUNS_PATH/r$RUN_NUM"
 CONFIG_PATH=$CURRENT_RUN_PATH/config
 OUTPUT_PATH=$CURRENT_RUN_PATH/output
-HYDROPOP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/HPU_forcing_data
-MOSQUITO_POP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/mosquito_pop_output
-HUMAN_EPI_MODEL_OUTPUT_PATH=$OUTPUT_PATH/human_model_output
+HYDROPOP_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$HYDROPOP_OUTPUT_DIRNAME"
+MOSQUITO_POP_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$MOSQUITO_POP_OUTPUT_DIRNAME"
+HUMAN_EPI_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$EPI_MODEL_OUTPUT_DIRNAME"
 LOGS_PATH=$CURRENT_RUN_PATH/logs
-HYDROPOP_LOGS_PATH=$LOGS_PATH/hydropop
-MOSQUITO_POP_LOGS_PATH=$LOGS_PATH/mosquito_pop
-HUMAN_EPI_LOGS_PATH=$LOGS_PATH/human_epi
+HYDROPOP_LOGS_PATH="$LOGS_PATH/$HYDROPOP_LOG_DIRNAME"
+MOSQUITO_POP_LOGS_PATH="$LOGS_PATH/$MOSQUITO_POP_LOG_DIRNAME"
+HUMAN_EPI_LOGS_PATH="$LOGS_PATH/$EPI_MODEL_LOG_DIRNAME"
 
+# TO DO: Fix this while linking models
 MOSQUITO_POP_INPUT_PATH="$MOSQUITO_POP_MODEL_PATH/input"
 
-# Config file names
-HYDROPOP_CONFIG_FILENAME='hp_config_darwin.yaml'
-MOSQUITO_POP_CONFIG_FILENAME='mosq_config.yaml'
-HUMAN_EPI_CONFIG_FILENAME='human_epi_config.yaml'
+# Create run directories
+sh makedir_if_not_exists.sh $CURRENT_RUN_PATH
+sh makedir_if_not_exists.sh $CONFIG_PATH
+sh makedir_if_not_exists.sh $OUTPUT_PATH
+sh makedir_if_not_exists.sh $HYDROPOP_MODEL_OUTPUT_PATH
+sh makedir_if_not_exists.sh $MOSQUITO_POP_MODEL_OUTPUT_PATH
+sh makedir_if_not_exists.sh $HUMAN_EPI_MODEL_OUTPUT_PATH
+sh makedir_if_not_exists.sh $LOGS_PATH
+sh makedir_if_not_exists.sh $HYDROPOP_LOGS_PATH
+sh makedir_if_not_exists.sh $MOSQUITO_POP_LOGS_PATH
+sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
+
+# Set config files
+# TO DO: Need to figure out how to set paramter values in config files.
+
+# Run hydropop model
+RUN_HYDROPOP_MODEL() {
+    echo "$(date): Running hydropop model.."
+    sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
+    SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
+    if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
+        echo "$(date): Hydropop model completed successfully."
+    else
+        echo "$(date): ERROR!! hydropop model failed."
+        cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi
+}
+
+# Run mosquito pop model
+RUN_MOSQUITO_POP_MODEL() {
+    echo "$(date): Running mosquito pop model.."
+    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
+    SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
+    if ! [ -z "$SUCCESS_FLAG" ]; then
+        echo "$(date): Mosquito pop model completed successfully."
+    else
+        echo "$(date): ERROR!! Mosquito pop model failed."
+        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi
+}
+
+# Run Run human epi model
+RUN_HUMAN_EPI_MODEL() {
+    echo "$(date): Running human epi model.."
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
+    NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
+    if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
+        echo "$(date): Human epi model completed successfully."
+    else
+        echo "$(date): ERROR!! human epi model failed."
+        cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        # TO DO: Need to email the relevant team (instead of nidhip) on failure.
+        exit
+    fi
+}
+
+# Run experiemnt from the specified model
+if [ "$MODEL_TO_START_FROM" = "hydropop" ]; then
+    RUN_HYDROPOP_MODEL
+    RUN_MOSQUITO_POP_MODEL
+    RUN_HUMAN_EPI_MODEL
+elif [ "$MODEL_TO_START_FROM" = "mosquito_pop" ]; then
+    # Check if previous model was successful. If so start experiment from mosquito pop model. If not, raise an error.
+    SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
+    if ! [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
+        echo -e "ERROR!! Hydropop model was not successful for run $RUN_NUM. Try starting the run from hydropop model."
+        exit
+    fi
+    RUN_MOSQUITO_POP_MODEL
+    RUN_HUMAN_EPI_MODEL
+elif [ "$MODEL_TO_START_FROM" = "human_epi" ]; then
+    # Check if previous model was successful. If so start experiment from human epi model. If not, raise an error.
+    SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
+    if [ -z "$SUCCESS_FLAG" ]; then
+        echo -e "ERROR!! mosquito pop model was not successful for run $RUN_NUM. Try starting the run from mosquito pop model."
+        exit
+    fi
+    RUN_HUMAN_EPI_MODEL
+else
+    echo -e "ERROR!! Model to start this run from (option -m) must be hydropop, mosquito_pop, or human_epi."
+    exit
+fi

@@ -16,11 +16,20 @@ INTEGRATION_MODEL:
 HYDROPOP_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/hydropop.git"
     BRANCH: "master"
+    CONFIG_FILENAME: "hp_config_darwin.yaml"
+    OUTPUT_DIRNAME: "HPU_forcing_data"
+    LOG_DIRNAME: "hydropop"
 
 MOSQUITO_POP_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
     POP_BRANCH: "master"
+    CONFIG_FILENAME: "mosq_config.yaml"
+    OUTPUT_DIRNAME: "mosquito_pop_output"
+    LOG_DIRNAME: "mosquito_pop"
 
 EPI_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
     BRANCH: "master"
+    CONFIG_FILENAME: "human_epi_config.yaml"
+    OUTPUT_DIRNAME: "human_model_output"
+    LOG_DIRNAME: "human_epi"
