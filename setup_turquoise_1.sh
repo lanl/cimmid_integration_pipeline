@@ -44,7 +44,7 @@ cd $BARE_DROPZONE_REPO_PATH
 BARE_DROPZONE_REPO_PATH=`pwd`
 
 # Create bare DropZone repo for integration model
-INTEGRATION_DIR=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+INTEGRATION_DIR=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 echo "$(date): creating bare DropZone repo for integration.."
 INTEGRATION_BARE_DROPZONE_REPO_PATH="$BARE_DROPZONE_REPO_PATH/$INTEGRATION_DIR"
 mkdir $INTEGRATION_BARE_DROPZONE_REPO_PATH
@@ -52,7 +52,7 @@ cd $INTEGRATION_BARE_DROPZONE_REPO_PATH
 git --bare init
 
 # Create bare DropZone repo for hydropop
-HYDROPO_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+HYDROPO_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 echo "$(date): creating bare DropZone repo for hydropop.."
 HYDROPOP_BARE_DROPZONE_REPO_PATH="$BARE_DROPZONE_REPO_PATH/$HYDROPO_DIR"
 mkdir $HYDROPOP_BARE_DROPZONE_REPO_PATH
@@ -60,7 +60,7 @@ cd $HYDROPOP_BARE_DROPZONE_REPO_PATH
 git --bare init
 
 # Create bare DropZone repo for mosquito pop model
-MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 echo "$(date): creating bare DropZone repo for mosquito pop model.."
 MOSQUITO_POP_BARE_DROPZONE_REPO_PATH="$BARE_DROPZONE_REPO_PATH/$MOSQUITO_POP_DIR"
 mkdir $MOSQUITO_POP_BARE_DROPZONE_REPO_PATH
@@ -68,7 +68,7 @@ cd $MOSQUITO_POP_BARE_DROPZONE_REPO_PATH
 git --bare init
 
 # Create bare DropZone repo for epi model
-EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 echo "$(date): creating bare DropZone repo for epi model.."
 EPI_BARE_DROPZONE_REPO_PATH="$BARE_DROPZONE_REPO_PATH/$EPI_DIR"
 mkdir $EPI_BARE_DROPZONE_REPO_PATH

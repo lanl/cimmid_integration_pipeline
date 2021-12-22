@@ -37,37 +37,37 @@ GITLAB_WORKING_REPO_PATH="$PROJECT_ROOT/$GITLAB_WORKING_REPO_PATH"
 cd $GITLAB_WORKING_REPO_PATH
 
 # Pull latest code for integration model and push it to turquoise cluster (e.g., badger)
-INTEGRATION_REPO=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_REPO`
+INTEGRATION_REPO=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.REPO`
 INTEGRATION_DIR=`echo $INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $INTEGRATION_DIR
-INTEGRATION_BRANCH=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_BRANCH`
+INTEGRATION_BRANCH=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.BRANCH`
 git pull $INTEGRATION_REPO $INTEGRATION_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
 # Pull latest code for hydropop model and push it to turquoise cluster (e.g., badger)
-HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_REPO`
+HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO`
 HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $HYDROPO_DIR
-HYDROPO_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_BRANCH`
+HYDROPO_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.BRANCH`
 git pull $HYDROPOP_REPO $HYDROPO_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
 # Pull latest code for mosquito pop model and push it to turquoise cluster (e.g., badger)
-MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_REPO`
+MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO`
 MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $MOSQUITO_POP_DIR
-MOSQUITO_POP_BRANCH=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_BRANCH`
+MOSQUITO_POP_BRANCH=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.BRANCH`
 git pull $MOSQUITO_POP_REPO $MOSQUITO_POP_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
 # Pull latest code for epi model and push it to turquoise cluster (e.g., badger)
-EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_REPO`
+EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO`
 EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $EPI_DIR
-EPI_MODEL_BRANCH=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_BRANCH`
+EPI_MODEL_BRANCH=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.BRANCH`
 git pull $EPI_MODEL_REPO $EPI_MODEL_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH

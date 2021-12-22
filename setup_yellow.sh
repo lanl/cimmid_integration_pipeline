@@ -50,7 +50,7 @@ cd $GITLAB_WORKING_REPO_PATH
 
 # Git clone integration model
 echo "$(date): cloning integration model.."
-INTEGRATION_REPO=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_REPO`
+INTEGRATION_REPO=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.REPO`
 git clone $INTEGRATION_REPO
 INTEGRATION_DIR=`echo $INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $INTEGRATION_DIR
@@ -65,7 +65,7 @@ echo ""
 
 # Git clone hydropop model
 echo "$(date): cloning hydropop model.."
-HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_REPO`
+HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO`
 git clone $HYDROPOP_REPO
 HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $HYDROPO_DIR
@@ -79,7 +79,7 @@ echo ""
 
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
-MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_REPO`
+MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO`
 git clone $MOSQUITO_POP_REPO
 MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $MOSQUITO_POP_DIR
@@ -93,7 +93,7 @@ echo ""
 
 # Git clone epi model
 echo "$(date): cloning epi model.."
-EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_REPO`
+EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO`
 git clone $EPI_MODEL_REPO
 EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $EPI_DIR

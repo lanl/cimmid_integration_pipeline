@@ -40,10 +40,10 @@ CONFIG_FILE="$PROJECT_ROOT/$2"
 # Read paths from config file
 BARE_DROPZONE_REPO_PATH=`cat $CONFIG_FILE | shyaml get-value TURQUOISE_NET.BARE_DROPZONE_REPO_PATH`
 BARE_DROPZONE_REPO_PATH="$PROJECT_ROOT/$BARE_DROPZONE_REPO_PATH"
-INTEGRATION_DIR=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-HYDROPO_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+INTEGRATION_DIR=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+HYDROPO_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 
 conda deactivate
 
