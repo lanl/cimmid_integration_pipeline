@@ -41,6 +41,7 @@ INTEGRATION_DIR=`echo $INTEGRATION_REPO | rev | cut -d"/" -f1 | rev | cut -d"." 
 cd $INTEGRATION_DIR
 INTEGRATION_BRANCH=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.BRANCH`
 git pull $INTEGRATION_REPO $INTEGRATION_BRANCH
+git checkout $INTEGRATION_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
@@ -50,6 +51,7 @@ HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $HYDROPO_DIR
 HYDROPO_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.BRANCH`
 git pull $HYDROPOP_REPO $HYDROPO_BRANCH
+git checkout $HYDROPO_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
@@ -59,6 +61,7 @@ MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d".
 cd $MOSQUITO_POP_DIR
 MOSQUITO_POP_BRANCH=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.BRANCH`
 git pull $MOSQUITO_POP_REPO $MOSQUITO_POP_BRANCH
+git checkout $MOSQUITO_POP_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
@@ -68,6 +71,7 @@ EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $EPI_DIR
 EPI_MODEL_BRANCH=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.BRANCH`
 git pull $EPI_MODEL_REPO $EPI_MODEL_BRANCH
+git checkout $EPI_MODEL_BRANCH
 git push Turq-dev
 cd $GITLAB_WORKING_REPO_PATH
 
