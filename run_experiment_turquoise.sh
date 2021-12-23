@@ -11,7 +11,7 @@
 # TO DO: Update above path to a path in project directory instead of in my home directory
 ############################################################################################
 
-module load gcc
+#module load gcc
 
 # Print script usage
 PRINT_USAGE() {

@@ -22,7 +22,7 @@ HYDROPOP_MODEL:
 
 MOSQUITO_POP_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
-    POP_BRANCH: "master"
+    BRANCH: "master"
     CONFIG_FILENAME: "mosq_config.yaml"
     OUTPUT_DIRNAME: "mosquito_pop_output"
     LOG_DIRNAME: "mosquito_pop"
