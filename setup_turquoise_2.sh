@@ -67,7 +67,7 @@ git clone "$BARE_DROPZONE_REPO_PATH/$HYDROPO_DIR"
 echo "$(date): creating virtual environment for hydropop model.."
 conda create --name hpu python=3.8
 #conda activate hpu
-source ctivate hpu
+source activate hpu
 conda install -c conda-forge mamba
 mamba install -c conda-forge rivgraph=0.4 yaml
 conda deactivate
