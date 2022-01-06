@@ -26,7 +26,8 @@ export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
 # Create virtual environment for integration
 conda create --name integration python=3.8
-conda activate integration
+#conda activate integration
+source activate integration
 conda install -c conda-forge shyaml
 
 # Get config file

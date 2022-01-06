@@ -53,8 +53,8 @@ sed -i.bak "s|MOSQUITO_POP_LOGS_PATH|$MOSQUITO_POP_LOGS_PATH|g" $CONFIG_PATH/$MO
 sed -i.bak "s|MOSQUITO_POP_OUTPUT_PATH|$MOSQUITO_POP_OUTPUT_PATH|g" $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
 
 # Run model
-conda activate "$MINICONDA_PATH/envs/mosq-R"
-#source activate "$MINICONDA_PATH/envs/mosq-R"
+#conda activate "$MINICONDA_PATH/envs/mosq-R"
+source activate "$MINICONDA_PATH/envs/mosq-R"
 sh run_mosq_toy.sh $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
 conda deactivate
 

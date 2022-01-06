@@ -50,8 +50,8 @@ sed -i.bak "s|HYDROPOP_LOGS_PATH|$HYDROPOP_LOGS_PATH|g" $CONFIG_PATH/$HYDROPOP_C
 sed -i.bak "s|HYDROPOP_MODEL_OUTPUT_PATH|$HYDROPOP_MODEL_OUTPUT_PATH|g" $CONFIG_PATH/$HYDROPOP_CONFIG_FILENAME
 
 # Run model
-conda activate "$MINICONDA_PATH/envs/hpu"
-#source activate "$MINICONDA_PATH/envs/hpu"
+#conda activate "$MINICONDA_PATH/envs/hpu"
+source activate "$MINICONDA_PATH/envs/hpu"
 python e3sm_to_mosq_model_inputs.py --config $CONFIG_PATH/$HYDROPOP_CONFIG_FILENAME
 conda deactivate
 

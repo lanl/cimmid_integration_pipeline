@@ -56,7 +56,8 @@ fi
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
-conda activate integration
+#conda activate integration
+source activate integration
 
 # Get config file
 CONFIG_FILE=$2

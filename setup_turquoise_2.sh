@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 ###################################################################################################
 # Currently, CIMMID code lives on gitlab.lanl.gov (yellow network) which is not accessible from turquoise network (e.g., Badger) where ELM is setup to run. So need to create bare DropZone repos on turquoise cluster. This script needs to be run once before running any experiemnts on turquoise network.
@@ -30,7 +30,8 @@ fi
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
-conda activate integration
+#conda activate integration
+source activate integration
 
 # Get config file
 CONFIG_FILE=$2
@@ -65,7 +66,8 @@ cd $MODELS_PATH
 git clone "$BARE_DROPZONE_REPO_PATH/$HYDROPO_DIR"
 echo "$(date): creating virtual environment for hydropop model.."
 conda create --name hpu python=3.8
-conda activate hpu
+#conda activate hpu
+source ctivate hpu
 conda install -c conda-forge mamba
 mamba install -c conda-forge rivgraph=0.4 yaml
 conda deactivate
@@ -77,7 +79,8 @@ cd $MODELS_PATH
 git clone "$BARE_DROPZONE_REPO_PATH/$MOSQUITO_POP_DIR"
 echo "$(date): creating virtual environment for mosquito pop model.."
 conda create --name mosq-R python=3.8
-conda activate mosq-R
+#conda activate mosq-R
+source activate mosq-R
 conda install -c conda-forge mamba
 conda install -c conda-forge r r-logger
 conda install -c conda-forge r r-yaml
@@ -92,7 +95,8 @@ echo "$(date): cloning human epi model.."
 git clone "$BARE_DROPZONE_REPO_PATH/$EPI_DIR"
 echo "$(date): creating virtual environment for human epi model.."
 conda create --name human-epi-env python=3.8.3
-conda activate human-epi-env
+#conda activate human-epi-env
+source activate human-epi-env
 conda install --channel conda-forge numpy pyyaml pandas scipy pyarrow matplotlib sphinx
 conda deactivate
 echo ""

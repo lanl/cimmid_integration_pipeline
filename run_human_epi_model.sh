@@ -50,8 +50,8 @@ sed -i.bak "s|HUMAN_EPI_LOGS_PATH|$HUMAN_EPI_LOGS_PATH|g" $CONFIG_PATH/$HUMAN_EP
 sed -i.bak "s|HUMAN_EPI_MODEL_OUTPUT_PATH|$HUMAN_EPI_MODEL_OUTPUT_PATH|g" $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME
 
 # Run model
-conda activate "$MINICONDA_PATH/envs/human-epi-env"
-#source activate "$MINICONDA_PATH/envs/human-epi-env"
+#conda activate "$MINICONDA_PATH/envs/human-epi-env"
+source activate "$MINICONDA_PATH/envs/human-epi-env"
 logfiles=`shopt -s nullglob dotglob; echo $HUMAN_EPI_LOGS_PATH/*`
 if [ "$logfiles" != "" ]; then
     rm $HUMAN_EPI_LOGS_PATH/*

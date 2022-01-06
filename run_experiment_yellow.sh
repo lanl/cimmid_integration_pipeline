@@ -23,7 +23,8 @@ fi
 # ADD CIMMID miniconda path to PATH.
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
-conda activate integration
+#conda activate integration
+source activate integration
 
 # Get config file
 CONFIG_FILE=$2
