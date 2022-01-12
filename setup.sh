@@ -2,19 +2,20 @@
 
 ###################################################################################################
 # Needs to be run the first time to set up run environment and experiment.
-# Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION
+# Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE
 # PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# CONFIG_FILE: Config file (e.g., cimmid_old.yaml)
 ###################################################################################################
 
 # load/unload modules
-module unload gcc
-module load gcc/7.2.0
+module load gcc
 
 # Check for correct number of arguments.
-if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
+if [ "$#" -lt 2 ] || ! [ -d "$1" ] || ! [ -f "$2" ]; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
-    echo "Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION"
-    echo -e "PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo "Usage: sh setup_yellow.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE"
+    echo "PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3')"
+    echo -e "CONFIG_FILE: Config file (e.g., cimmid_old.yaml)\n"
     exit
 fi
 
@@ -22,9 +23,22 @@ fi
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
+# Create virtual environment for integration
+conda create --name integration python=3.8
+#conda activate integration
+source activate integration
+conda install -c conda-forge shyaml
 
 # Set base path
 BASE_PATH="$PWD"
+
+# Get config file
+CONFIG_FILE=$2
+CONFIG_FILE="$BASE_PATH/$2"
+HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO`
+MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO`
+EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO`
+conda deactivate
 
 # Make directory where models will be cloned from Gitlab
 echo "$(date): Making models directory.."
@@ -35,7 +49,7 @@ echo ""
 # Git clone hydropop model
 echo "$(date): cloning hydropop model.."
 cd $MODELS_PATH
-git clone git@gitlab.lanl.gov:cimmid/hydropop.git
+git clone $HYDROPOP_REPO
 echo "$(date): creating virtual environment for hydropop model.."
 conda create --name hpu python=3.8
 #conda activate hpu
@@ -48,7 +62,7 @@ echo ""
 # Git clone ELM
 echo "$(date): cloning ELM.."
 cd $MODELS_PATH
-git clone git@gitlab.lanl.gov:cimmid/earth_system_modeling/ELM_Disease.git
+git clone $MOSQUITO_POP_REPO
 echo "$(date): creating virtual environment for ELM.."
 conda create --name elm python=3.6 r-base=3.6 r-essentials=3.6 rpy2 pandas r-ncdf4 mpi4py pyyaml
 #conda activate elm
@@ -60,7 +74,7 @@ echo ""
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
 cd $MODELS_PATH
-git clone git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git
+git clone $EPI_MODEL_REPO
 echo "$(date): creating virtual environment for mosquito pop model.."
 conda create --name mosq-R python=3.8
 #conda activate mosq-R
@@ -69,7 +83,7 @@ conda install -c conda-forge mamba
 conda install -c conda-forge r r-logger
 conda install -c conda-forge r r-yaml
 conda install -c conda-forge r r-sp
-conda install -c conda-forge r r-rgdal
+conda install -c conda-forge r r-tidyverse
 conda deactivate
 echo ""
 
@@ -91,3 +105,4 @@ EXPERIMENTS_PATH="$BASE_PATH/experiments"
 RUNS_PATH="$EXPERIMENTS_PATH/runs"
 sh makedir_if_not_exists.sh $EXPERIMENTS_PATH
 sh makedir_if_not_exists.sh $RUNS_PATH
+echo "Done setting up."

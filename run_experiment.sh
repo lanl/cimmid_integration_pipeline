@@ -12,6 +12,10 @@
 module unload gcc
 module load gcc/7.2.0
 
+HYDROPOP_BRANCH="master"
+MOSQUITO_POP_BRANCH="master"
+HUMAN_EPI_MODEL_BRANCH="master"
+
 # Print script usage
 PRINT_USAGE() {
     echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH"
@@ -109,7 +113,7 @@ sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 # Run hydropop model
 RUN_HYDROPOP_MODEL() {
     echo "$(date): Running hydropop model.."
-    sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
+    sh run_hydropop_model.sh $HYDROPOP_MODEL_PATH $CONFIG_PATH $HYDROPOP_CONFIG_FILENAME $HYDROPOP_MODEL_OUTPUT_PATH $HYDROPOP_LOGS_PATH $HYDROPOP_BRANCH $MINICONDA_PATH &> $HYDROPOP_LOGS_PATH/hydropop.out
     SUCCESS_FLAG=`tail -1 $HYDROPOP_LOGS_PATH/hydropop.out | grep "SUCCESS"`
     if [ "$SUCCESS_FLAG" = "SUCCESS" ]; then
         echo "$(date): Hydropop model completed successfully."
@@ -124,7 +128,7 @@ RUN_HYDROPOP_MODEL() {
 # Run mosquito pop model
 RUN_MOSQUITO_POP_MODEL() {
     echo "$(date): Running mosquito pop model.."
-    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
+    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MOSQUITO_POP_BRANCH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
     SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
     if ! [ -z "$SUCCESS_FLAG" ]; then
         echo "$(date): Mosquito pop model completed successfully."
@@ -139,7 +143,7 @@ RUN_MOSQUITO_POP_MODEL() {
 # Run Run human epi model
 RUN_HUMAN_EPI_MODEL() {
     echo "$(date): Running human epi model.."
-    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $HUMAN_EPI_MODEL_BRANCH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
     NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
     NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
     if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
