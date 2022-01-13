@@ -2,26 +2,23 @@
 
 ############################################################################################
 # Runs an experiment (integrarted model). 
-# Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH
+# Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE
 # -r: Run number (optional)
 # -m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)
 # MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# CONFIG_FILE: Config file (e.g., cimmid_old.yaml)
 ############################################################################################
 
 # load/unload modules
-module unload gcc
-module load gcc/7.2.0
-
-HYDROPOP_BRANCH="master"
-MOSQUITO_POP_BRANCH="master"
-HUMAN_EPI_MODEL_BRANCH="master"
+module load gcc
 
 # Print script usage
 PRINT_USAGE() {
-    echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH"
+    echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE"
     echo "-r: Run number (optional; positive integer)"
     echo -e "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
-    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)"
+    echo "CONFIG_FILE: Config file (e.g., cimmid_old.yaml)\n"
 }
 
 # Get run number from command line arguments if specified
@@ -47,8 +44,8 @@ if ! [ "$MODEL_TO_START_FROM" = "hydropop" ] && ! [ "$MODEL_TO_START_FROM" = "mo
 fi
 
 # Check for correct number of arguments.
-if [ "$#" -lt 1 ] || ! [ -d "$1" ] ; then
-    echo -e "ERROR!! MINICONDA_PATH must be specified. See usage information below:\n"
+if [ "$#" -lt 2 ] || ! [ -d "$1" ] || ! [ -f "$2" ]; then
+    echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     PRINT_USAGE
     exit
 fi
@@ -56,13 +53,47 @@ fi
 # ADD CIMMID miniconda path to PATH
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
+conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
+#conda activate integration
+source activate integration
+
+# Get config file
+CONFIG_FILE=$2
+
+# Set base path
+BASE_PATH="$PWD"
+
+# Read paths from config file
+HYDROPOP_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+
+INTEGRATION_BRANCH=`cat $CONFIG_FILE | shyaml get-value INTEGRATION_MODEL.BRANCH`
+HYDROPOP_BRANCH=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.BRANCH`
+MOSQUITO_POP_BRANCH=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.BRANCH`
+HUMAN_EPI_MODEL_BRANCH=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.BRANCH`
+
+HYDROPOP_MODEL_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.MODEL_DIR`
+
+HYDROPOP_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.CONFIG_FILENAME`
+MOSQUITO_POP_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.CONFIG_FILENAME`
+EPI_MODEL_CONFIG_FILENAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.CONFIG_FILENAME`
+
+HYDROPOP_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.OUTPUT_DIRNAME`
+MOSQUITO_POP_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.OUTPUT_DIRNAME`
+EPI_MODEL_OUTPUT_DIRNAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.OUTPUT_DIRNAME`
+
+HYDROPOP_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.LOG_DIRNAME`
+MOSQUITO_POP_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.LOG_DIRNAME`
+EPI_MODEL_LOG_DIRNAME=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.LOG_DIRNAME`
+
+conda deactivate
 
 # Set paths
-# TO DO: When really coupling models, will need to deal with input data paths for all models. Skipping for toy model as they likely do not connect for now. Connecting even trivially may be a good next step. Need to talk to modeling teams. Katy is going to talk to Jon and Jeff about this.
-BASE_PATH="$PWD/"
-HYDROPOP_MODEL_PATH="$BASE_PATH/models/hydropop/toy_model"
-MOSQUITO_POP_MODEL_PATH="$BASE_PATH/models/mosquito-toy-model"
-HUMAN_EPI_MODEL_PATH="$BASE_PATH/models/human_epi_models/Epi_SEIR"
+MODELS_PATH="$BASE_PATH/models"
+HYDROPOP_MODEL_PATH="$MODELS_PATH/$HYDROPOP_DIR/$HYDROPOP_MODEL_DIR"
+MOSQUITO_POP_MODEL_PATH="$MODELS_PATH/$MOSQUITO_POP_DIR"
+HUMAN_EPI_MODEL_PATH="$MODELS_PATH/$EPI_DIR"
 EXPERIMENTS_PATH="$BASE_PATH/experiments"
 RUNS_PATH="$EXPERIMENTS_PATH/runs"
 if [ "$RUN_NUM" == "" ]; then
@@ -77,17 +108,19 @@ if ! [ "$RUN_NUM" -ge 0 ] ; then
     exit
 fi
 
+# Set current run specific paths
 CURRENT_RUN_PATH="$RUNS_PATH/r$RUN_NUM"
 CONFIG_PATH=$CURRENT_RUN_PATH/config
 OUTPUT_PATH=$CURRENT_RUN_PATH/output
-HYDROPOP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/HPU_forcing_data
-MOSQUITO_POP_MODEL_OUTPUT_PATH=$OUTPUT_PATH/mosquito_pop_output
-HUMAN_EPI_MODEL_OUTPUT_PATH=$OUTPUT_PATH/human_model_output
+HYDROPOP_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$HYDROPOP_OUTPUT_DIRNAME"
+MOSQUITO_POP_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$MOSQUITO_POP_OUTPUT_DIRNAME"
+HUMAN_EPI_MODEL_OUTPUT_PATH="$OUTPUT_PATH/$EPI_MODEL_OUTPUT_DIRNAME"
 LOGS_PATH=$CURRENT_RUN_PATH/logs
-HYDROPOP_LOGS_PATH=$LOGS_PATH/hydropop
-MOSQUITO_POP_LOGS_PATH=$LOGS_PATH/mosquito_pop
-HUMAN_EPI_LOGS_PATH=$LOGS_PATH/human_epi
+HYDROPOP_LOGS_PATH="$LOGS_PATH/$HYDROPOP_LOG_DIRNAME"
+MOSQUITO_POP_LOGS_PATH="$LOGS_PATH/$MOSQUITO_POP_LOG_DIRNAME"
+HUMAN_EPI_LOGS_PATH="$LOGS_PATH/$EPI_MODEL_LOG_DIRNAME"
 
+# TO DO: Fix this while linking models
 MOSQUITO_POP_INPUT_PATH="$MOSQUITO_POP_MODEL_PATH/input"
 
 # Config file names
@@ -122,7 +155,7 @@ RUN_HYDROPOP_MODEL() {
         cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
-    fi      
+    fi
 }
 
 # Run mosquito pop model
