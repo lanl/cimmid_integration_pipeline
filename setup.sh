@@ -50,6 +50,9 @@ echo ""
 echo "$(date): cloning hydropop model.."
 cd $MODELS_PATH
 git clone $HYDROPOP_REPO
+HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+cd $HYDROPO_DIR
+git config pull.rebase false
 echo "$(date): creating virtual environment for hydropop model.."
 conda create --name hpu python=3.8
 #conda activate hpu
@@ -59,22 +62,12 @@ mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
 conda deactivate
 echo ""
 
-# Git clone ELM
-echo "$(date): cloning ELM.."
-cd $MODELS_PATH
-git clone $MOSQUITO_POP_REPO
-echo "$(date): creating virtual environment for ELM.."
-conda create --name elm python=3.6 r-base=3.6 r-essentials=3.6 rpy2 pandas r-ncdf4 mpi4py pyyaml
-#conda activate elm
-source activate elm
-conda install -c conda-forge tzlocal
-conda deactivate
-echo ""
-
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
 cd $MODELS_PATH
 git clone $EPI_MODEL_REPO
+MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+cd $MOSQUITO_POP_DIR
 echo "$(date): creating virtual environment for mosquito pop model.."
 conda create --name mosq-R python=3.8
 #conda activate mosq-R
@@ -89,7 +82,11 @@ echo ""
 
 # Git clone human epi model
 echo "$(date): cloning human epi model.."
-git clone git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git
+cd $MODELS_PATH
+git clone $EPI_MODEL_REPO
+EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+cd $EPI_DIR
+git config pull.rebase false
 echo "$(date): creating virtual environment for human epi model.."
 conda create --name human-epi-env python=3.8.3
 #conda activate human-epi-env
