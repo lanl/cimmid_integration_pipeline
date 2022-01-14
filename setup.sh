@@ -68,6 +68,7 @@ cd $MODELS_PATH
 git clone $MOSQUITO_POP_REPO
 MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $MOSQUITO_POP_DIR
+git config pull.rebase false
 echo "$(date): creating virtual environment for mosquito pop model.."
 conda create --name mosq-R python=3.8
 #conda activate mosq-R
