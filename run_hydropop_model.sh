@@ -56,4 +56,4 @@ python e3sm_to_mosq_model_inputs.py --config $CONFIG_PATH/$HYDROPOP_CONFIG_FILEN
 conda deactivate
 
 # Change back to integration directory
-popd $HYDROPOP_MODEL_PATH > /dev/null
+popd > /dev/null

@@ -65,7 +65,7 @@ echo ""
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
 cd $MODELS_PATH
-git clone $EPI_MODEL_REPO
+git clone $MOSQUITO_POP_REPO
 MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $MOSQUITO_POP_DIR
 echo "$(date): creating virtual environment for mosquito pop model.."

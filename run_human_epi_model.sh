@@ -60,4 +60,4 @@ sh run_human_epi_model.sh $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME 0 > $HUMAN_EPI
 conda deactivate
 
 # Change back to integration directory
-popd $HUMAN_EPI_MODEL_PATH > /dev/null
+popd > /dev/null

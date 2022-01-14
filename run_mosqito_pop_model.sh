@@ -13,6 +13,15 @@
 # MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 ############################################################################################
 
+echo $1
+echo $2
+echo $3
+echo $4
+echo $5
+echo $6
+echo $7
+echo $8
+
 if [ "$#" -lt 8 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ] ; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "USAGE: ./run_mosquito_pop_model.sh MOSQUITO_POP_MODEL_PATH CONFIG_PATH MOSQUITO_POP_CONFIG_FILENAME MOSQUITO_POP_OUTPUT_PATH MOSQUITO_POP_LOGS_PATH MINICONDA_PATH"
@@ -59,4 +68,4 @@ sh run_mosq_toy.sh $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
 conda deactivate
 
 # Change back to integration directory
-popd $MOSQUITO_POP_MODEL_PATH > /dev/null
+popd > /dev/null
