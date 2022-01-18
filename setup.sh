@@ -77,6 +77,7 @@ conda install -c conda-forge mamba
 conda install -c conda-forge r r-logger
 conda install -c conda-forge r r-yaml
 conda install -c conda-forge r r-sp
+conda install -c conda-forge r r-rgdal
 conda install -c conda-forge r r-tidyverse
 conda deactivate
 echo ""
