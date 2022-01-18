@@ -69,7 +69,7 @@ conda create --name hpu python=3.8
 #conda activate hpu
 source activate hpu
 conda install -c conda-forge mamba
-mamba install -c conda-forge rivgraph=0.4 yaml
+mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
 conda deactivate
 echo ""
 
