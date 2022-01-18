@@ -31,6 +31,7 @@ MOSQUITO_POP_MODEL:
 EPI_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
     BRANCH: "master"
+    MODEL_DIR: "Epi_SEIR"
     CONFIG_FILENAME: "human_epi_config.yaml"
     OUTPUT_DIRNAME: "human_model_output"
     LOG_DIRNAME: "human_epi"

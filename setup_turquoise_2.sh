@@ -94,10 +94,10 @@ echo ""
 echo "$(date): cloning human epi model.."
 git clone "$BARE_DROPZONE_REPO_PATH/$EPI_DIR"
 echo "$(date): creating virtual environment for human epi model.."
-conda create --name human-epi-env python=3.8.3
+conda create --name human-epi-env python=3.9
 #conda activate human-epi-env
 source activate human-epi-env
-conda install --channel conda-forge numpy pyyaml pandas scipy pyarrow matplotlib sphinx
+conda install --channel conda-forge numpy pyyaml pandas scipy pyarrow matplotlib sphinx pytest lmfit
 conda deactivate
 echo ""
 
