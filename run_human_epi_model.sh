@@ -19,7 +19,7 @@ echo $2
 ls -lrt $2
 
 echo $3
-ls -lrt $3
+ls -lrt $1/config/$3
 
 echo $4
 ls -lrt $4
@@ -28,7 +28,6 @@ echo $5
 ls -lrt $5
 
 echo $6
-ls -lrt $6
 
 echo $7
 ls -lrt $7
