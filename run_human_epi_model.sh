@@ -12,26 +12,6 @@
 # MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 ############################################################################################
 
-echo $1
-ls -lrt $1
-
-echo $2
-ls -lrt $2
-
-echo $3
-ls -lrt $1/config/$3
-
-echo $4
-ls -lrt $4
-
-echo $5
-ls -lrt $5
-
-echo $6
-
-echo $7
-ls -lrt $7
-
 if [ "$#" -lt 7 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$7" ] ; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "USAGE: ./run_human_epi_model.sh HUMAN_EPI_MODEL_PATH CONFIG_PATH HUMAN_EPI_CONFIG_FILENAME HUMAN_EPI_MODEL_OUTPUT_PATH HUMAN_EPI_LOGS_PATH MINICONDA_PATH"
