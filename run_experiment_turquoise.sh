@@ -66,6 +66,8 @@ INTEGRATION_PATH="$PROJECT_ROOT/$INTEGRATION_DIR"
 CONFIG_FILE="$INTEGRATION_PATH/$2"
 
 # Read paths from config file
+TURQUOISE_MACHINE=`cat $CONFIG_FILE | shyaml get-value TURQUOISE_NET.LOGIN_NODE`
+
 HYDROPOP_DIR=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
@@ -155,7 +157,7 @@ RUN_HYDROPOP_MODEL() {
         echo "$(date): Hydropop model completed successfully."
     else
         echo "$(date): ERROR!! hydropop model failed."
-        cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $HYDROPOP_LOGS_PATH/hydropop.out | mail -s "CIMMID hydropop model run failed. Run directory is at $TURQUOISE_MACHINE:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi
@@ -170,7 +172,7 @@ RUN_MOSQUITO_POP_MODEL() {
         echo "$(date): Mosquito pop model completed successfully."
     else
         echo "$(date): ERROR!! Mosquito pop model failed."
-        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at $TURQUOISE_MACHINE:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi
@@ -186,7 +188,7 @@ RUN_HUMAN_EPI_MODEL() {
         echo "$(date): Human epi model completed successfully."
     else
         echo "$(date): ERROR!! human epi model failed."
-        cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at $TURQUOISE_MACHINE:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi
