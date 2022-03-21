@@ -4,7 +4,7 @@
 # Currently, CIMMID code lives on gitlab.lanl.gov (yellow network) which is not accessible from turquoise network (e.g., Badger) where ELM is setup to run. So need to create bare DropZone repos on turquoise cluster. This script needs to be run once before running any experiemnts on turquoise network.
 
 # Usage: sh setup_turuoise_2.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE
-# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/turquoise/users/nidhip/miniconda3')
+# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/turquoise/usr/projects/cimmid/miniconda3')
 # CONFIG_FILE: Config file (e.g., cimmid.yaml)
 
 # TO DO: Update above path to a path in project directory instead of in my home directory
