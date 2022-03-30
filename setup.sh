@@ -3,7 +3,7 @@
 ###################################################################################################
 # Needs to be run the first time to set up run environment and experiment.
 # Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE
-# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3-py38' for Darwin)
 # CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)
 ###################################################################################################
 
@@ -45,21 +45,6 @@ echo "$(date): Making models directory.."
 MODELS_PATH="$BASE_PATH/models"
 sh makedir_if_not_exists.sh $MODELS_PATH
 echo ""
-
-# Git clone hydropop model
-#echo "$(date): cloning hydropop model.."
-#cd $MODELS_PATH
-#git clone $HYDROPOP_REPO
-#HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-#cd $HYDROPO_DIR
-#git config pull.rebase false
-#echo "$(date): creating virtual environment for hydropop model.."
-#conda create --name hpu python=3.8
-#source activate hpu
-#conda install -c conda-forge mamba
-#mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
-#conda deactivate
-#echo ""
 
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
