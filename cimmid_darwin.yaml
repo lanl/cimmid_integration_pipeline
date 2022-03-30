@@ -1,8 +1,8 @@
-PROJECT_ROOT: "/projects/cimmid/users/nidhip/integration/toy_model/toy_model"
-PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3"
+#PROJECT_ROOT: "/projects/cimmid/users/nidhip/integration/toy_model/toy_model"
+PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3-py38"
 
 INTEGRATION_MODEL:
-    REPO: "git@gitlab.lanl.gov:cimmid/integration/toy_model.git"
+    REPO: "git@gitlab.lanl.gov:cimmid/integration/integration_pipeline.git"
     BRANCH: "2-move_to_badger"
 
 HYDROPOP_MODEL:
@@ -23,6 +23,7 @@ MOSQUITO_POP_MODEL:
 EPI_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
     BRANCH: "master"
+    MODEL_DIR: "Epi_SEIR"
     CONFIG_FILENAME: "human_epi_config.yaml"
     OUTPUT_DIRNAME: "human_model_output"
     LOG_DIRNAME: "human_epi"

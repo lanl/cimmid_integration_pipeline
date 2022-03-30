@@ -4,7 +4,7 @@
 # Needs to be run the first time to set up run environment and experiment.
 # Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE
 # PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
-# CONFIG_FILE: Config file (e.g., cimmid_old.yaml)
+# CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)
 ###################################################################################################
 
 # load/unload modules
@@ -15,7 +15,7 @@ if [ "$#" -lt 2 ] || ! [ -d "$1" ] || ! [ -f "$2" ]; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "Usage: sh setup_yellow.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE"
     echo "PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3')"
-    echo -e "CONFIG_FILE: Config file (e.g., cimmid_old.yaml)\n"
+    echo -e "CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)\n"
     exit
 fi
 
@@ -35,7 +35,7 @@ BASE_PATH="$PWD"
 # Get config file
 CONFIG_FILE=$2
 CONFIG_FILE="$BASE_PATH/$2"
-HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO`
+#HYDROPOP_REPO=`cat $CONFIG_FILE | shyaml get-value HYDROPOP_MODEL.REPO`
 MOSQUITO_POP_REPO=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO`
 EPI_MODEL_REPO=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO`
 conda deactivate
@@ -47,20 +47,19 @@ sh makedir_if_not_exists.sh $MODELS_PATH
 echo ""
 
 # Git clone hydropop model
-echo "$(date): cloning hydropop model.."
-cd $MODELS_PATH
-git clone $HYDROPOP_REPO
-HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
-cd $HYDROPO_DIR
-git config pull.rebase false
-echo "$(date): creating virtual environment for hydropop model.."
-conda create --name hpu python=3.8
-#conda activate hpu
-source activate hpu
-conda install -c conda-forge mamba
-mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
-conda deactivate
-echo ""
+#echo "$(date): cloning hydropop model.."
+#cd $MODELS_PATH
+#git clone $HYDROPOP_REPO
+#HYDROPO_DIR=`echo $HYDROPOP_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
+#cd $HYDROPO_DIR
+#git config pull.rebase false
+#echo "$(date): creating virtual environment for hydropop model.."
+#conda create --name hpu python=3.8
+#source activate hpu
+#conda install -c conda-forge mamba
+#mamba install -c jschwenk -c conda-forge rivgraph=0.4 yaml
+#conda deactivate
+#echo ""
 
 # Git clone mosquito pop model
 echo "$(date): cloning mosquito pop model.."
@@ -93,7 +92,15 @@ echo "$(date): creating virtual environment for human epi model.."
 conda create --name human-epi-env python=3.8.3
 #conda activate human-epi-env
 source activate human-epi-env
-conda install --channel conda-forge numpy pyyaml pandas scipy pyarrow matplotlib sphinx
+conda install --channel conda-forge numpy
+conda install --channel conda-forge pyyaml
+conda install --channel conda-forge pandas
+conda install --channel conda-forge scipy
+conda install --channel conda-forge pyarrow
+conda install --channel conda-forge matplotlib
+conda install --channel conda-forge sphinx
+conda install --channel conda-forge pytest
+conda install --channel conda-forge lmfit
 cd $BASE_PATH
 conda deactivate
 echo ""
