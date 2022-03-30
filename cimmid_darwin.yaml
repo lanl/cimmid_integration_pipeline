@@ -1,17 +1,4 @@
-#PROJECT_ROOT: "/projects/cimmid/users/nidhip/integration/toy_model/toy_model"
 PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3-py38"
-
-INTEGRATION_MODEL:
-    REPO: "git@gitlab.lanl.gov:cimmid/integration/integration_pipeline.git"
-    BRANCH: "2-move_to_badger"
-
-HYDROPOP_MODEL:
-    REPO: "git@gitlab.lanl.gov:cimmid/hydropop.git"
-    BRANCH: "master"
-    MODEL_DIR: "toy_model"
-    CONFIG_FILENAME: "hp_config_darwin.yaml"
-    OUTPUT_DIRNAME: "HPU_forcing_data"
-    LOG_DIRNAME: "hydropop"
 
 MOSQUITO_POP_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
