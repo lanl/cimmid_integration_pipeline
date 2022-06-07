@@ -3,7 +3,7 @@
 ###################################################################################################
 # Needs to be run the first time to set up run environment and experiment.
 # Usage: ./setup.sh PATH_TO_MINICONDA_INSTALLATION CONFIG_FILE
-# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3-py38' for Darwin)
+# PATH_TO_MINICONDA_INSTALLATION: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 # CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)
 ###################################################################################################
 
@@ -54,7 +54,7 @@ MOSQUITO_POP_DIR=`echo $MOSQUITO_POP_REPO | rev | cut -d"/" -f1 | rev | cut -d".
 cd $MOSQUITO_POP_DIR
 git config pull.rebase false
 echo "$(date): creating virtual environment for mosquito pop model.."
-conda create --name mosq-R python=3.8
+conda create --name mosq-R python=3.9
 #conda activate mosq-R
 source activate mosq-R
 conda install -c conda-forge mamba
@@ -74,20 +74,22 @@ EPI_DIR=`echo $EPI_MODEL_REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 cd $EPI_DIR
 git config pull.rebase false
 echo "$(date): creating virtual environment for human epi model.."
-conda create --name human-epi-env python=3.9
+rm -r $MINICONDA_PATH/envs
+conda env create -f conda_environment/environment.yml
+#conda create --name human-epi-env python=3.9
 #conda activate human-epi-env
-source activate human-epi-env
-conda install --channel conda-forge numpy
-conda install --channel conda-forge pyyaml
-conda install --channel conda-forge pandas
-conda install --channel conda-forge scipy
-conda install --channel conda-forge pyarrow
-conda install --channel conda-forge matplotlib
-conda install --channel conda-forge sphinx
-conda install --channel conda-forge pytest
-conda install --channel conda-forge lmfit
+#source activate human-epi-env
+#conda install --channel conda-forge numpy
+#conda install --channel conda-forge pyyaml
+#conda install --channel conda-forge pandas
+#conda install --channel conda-forge scipy
+#conda install --channel conda-forge pyarrow
+#conda install --channel conda-forge matplotlib
+#conda install --channel conda-forge sphinx
+#conda install --channel conda-forge pytest
+#conda install --channel conda-forge lmfit
 cd $BASE_PATH
-conda deactivate
+#conda deactivate
 echo ""
 
 # Create experiments and run directories

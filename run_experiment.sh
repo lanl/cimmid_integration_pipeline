@@ -5,7 +5,7 @@
 # Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE
 # -r: Run number (optional)
 # -m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)
-# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3-py38' for Darwin)
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
 # CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)
 ############################################################################################
 
@@ -113,6 +113,7 @@ HUMAN_EPI_LOGS_PATH="$LOGS_PATH/$EPI_LOG_DIRNAME"
 
 # TO DO: Fix this while linking models
 MOSQUITO_POP_INPUT_PATH="$MOSQUITO_POP_MODEL_PATH/input"
+HUMAN_EPI_INPUT_PATH=$MOSQUITO_POP_MODEL_OUTPUT_PATH
 
 # Create run directories
 sh makedir_if_not_exists.sh $CURRENT_RUN_PATH
@@ -145,14 +146,13 @@ RUN_MOSQUITO_POP_MODEL() {
 # Run Run human epi model
 RUN_HUMAN_EPI_MODEL() {
     echo "$(date): Running human epi model.."
-    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
-    NUM_EPI_MODELS=`cat $HUMAN_EPI_MODEL_PATH/run_human_epi_model.sh | grep "python models_main.py" | wc -l`
-    NUM_SUCCESSES=`cat $HUMAN_EPI_LOGS_PATH/* | grep "SUCCESS" | wc -l`
-    if [ "$NUM_EPI_MODELS" -eq "$NUM_SUCCESSES" ]; then
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    SUCCESS_FLAG=`cat $HUMAN_EPI_LOGS_PATH/human_epi.out | grep "ALL HPU RUNS SUCCESSFUL"`
+    if ! [ -z "$SUCCESS_FLAG" ]; then
         echo "$(date): Human epi model completed successfully."
     else
         echo "$(date): ERROR!! human epi model failed."
-        cat $HUMAN_EPI_LOGS_PATH/* | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $HUMAN_EPI_LOGS_PATH/human_epi.out | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi

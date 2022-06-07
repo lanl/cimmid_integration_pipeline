@@ -1,4 +1,4 @@
-PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3-py38"
+PATH_TO_MINICONDA_INSTALLATION: "/projects/cimmid/miniconda3"
 
 MOSQUITO_POP_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/earth_system_modeling/mosquito-toy-model.git"
