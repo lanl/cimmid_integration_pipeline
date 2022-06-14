@@ -11,9 +11,10 @@
 # MOSQUITO_POP_LOGS_PATH: Path where mosquito pop log will be stored for the current experiment run
 # MOSQUITO_POP_BRANCH: Mosquito pop model branch to use
 # MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# GLOBAL_CONFIG_FILE: Path to global config file (e.g., cimmid_darwin.yaml)
 ############################################################################################
 
-if [ "$#" -lt 8 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ] ; then
+if [ "$#" -lt 9 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ] || ! [ -f "$9" ]; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "USAGE: ./run_mosquito_pop_model.sh MOSQUITO_POP_MODEL_PATH CONFIG_PATH MOSQUITO_POP_CONFIG_FILENAME MOSQUITO_POP_OUTPUT_PATH MOSQUITO_POP_LOGS_PATH MINICONDA_PATH"
     echo "MOSQUITO_POP_MODEL_PATH: Path where mosquito pop model is cloned from git"
@@ -23,9 +24,12 @@ if [ "$#" -lt 8 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/$3" ] || ! [ -
     echo "MOSQUITO_POP_OUTPUT_PATH: Path where mosquito pop output will be stored for the current experiment run"
     echo "MOSQUITO_POP_LOGS_PATH: Path where mosquito pop log will be stored for the current experiment run"
     echo "MOSQUITO_POP_BRANCH: Mosquito pop model branch to use"
-    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo -e "GLOBAL_CONFIG_FILE: Path to global config file (e.g., cimmid_darwin.yaml)"
     exit
 fi
+
+pwd
 
 MOSQUITO_POP_MODEL_PATH=$1
 CONFIG_PATH=$2
@@ -35,6 +39,7 @@ MOSQUITO_POP_OUTPUT_PATH=$5
 MOSQUITO_POP_LOGS_PATH=$6
 MOSQUITO_POP_BRANCH=$7
 MINICONDA_PATH=$8
+GLOBAL_CONFIG_FILE=$9
 
 # Change to directory where mosquito pop model is cloned
 pushd $MOSQUITO_POP_MODEL_PATH > /dev/null
@@ -51,6 +56,8 @@ cp $MOSQUITO_POP_MODEL_PATH/$MOSQUITO_POP_CONFIG_FILENAME $CONFIG_PATH
 sed -i.bak "s|MOSQUITO_POP_INPUT_PATH|$MOSQUITO_POP_INPUT_PATH|g" $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
 sed -i.bak "s|MOSQUITO_POP_LOGS_PATH|$MOSQUITO_POP_LOGS_PATH|g" $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
 sed -i.bak "s|MOSQUITO_POP_OUTPUT_PATH|$MOSQUITO_POP_OUTPUT_PATH|g" $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME
+
+python update_config_parameters.py $GLOBAL_CONFIG_FILE $CONFIG_PATH/$MOSQUITO_POP_CONFIG_FILENAME MOSQUITO_POP_MODEL
 
 # Run model
 #conda activate "$MINICONDA_PATH/envs/mosq-R"

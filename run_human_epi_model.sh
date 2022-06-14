@@ -11,9 +11,10 @@
 # HUMAN_EPI_LOGS_PATH: Path where human epi log will be stored for the current experiment run
 # HUMAN_EPI_MODEL_BRANCH: Human epi model branch to use
 # MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
+# GLOBAL_CONFIG_FILE: Path to global config file (e.g., cimmid_darwin.yaml)
 ############################################################################################
 
-if [ "$#" -lt 8 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ]; then
+if [ "$#" -lt 9 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ] || ! [ -f "$9" ]; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "USAGE: ./run_human_epi_model.sh HUMAN_EPI_MODEL_PATH CONFIG_PATH HUMAN_EPI_CONFIG_FILENAME HUMAN_EPI_INPUT_PATH HUMAN_EPI_MODEL_OUTPUT_PATH HUMAN_EPI_LOGS_PATH MINICONDA_PATH"
     echo "HUMAN_EPI_MODEL_PATH: Path where human epi model is cloned from git"
@@ -23,7 +24,8 @@ if [ "$#" -lt 8 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] |
     echo "HUMAN_EPI_MODEL_OUTPUT_PATH: Path where human epi output will be stored for the current experiment run"
     echo "HUMAN_EPI_LOGS_PATH: Path where human epi log will be stored for the current experiment run"
     echo "HUMAN_EPI_MODEL_BRANCH: Human epi model branch to use"
-    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)\n"
+    echo -e "GLOBAL_CONFIG_FILE: Path to global config file (e.g., cimmid_darwin.yaml)"
     exit
 fi
 
@@ -35,6 +37,7 @@ HUMAN_EPI_MODEL_OUTPUT_PATH=$5
 HUMAN_EPI_LOGS_PATH=$6
 HUMAN_EPI_MODEL_BRANCH=$7
 MINICONDA_PATH=$8
+GLOBAL_CONFIG_FILE=$9
 
 # Change to directory where human epi model is cloned
 pushd $HUMAN_EPI_MODEL_PATH > /dev/null
@@ -51,6 +54,8 @@ cp $HUMAN_EPI_MODEL_PATH/config/$HUMAN_EPI_CONFIG_FILENAME $CONFIG_PATH
 sed -i.bak "s|HUMAN_EPI_MODEL_PATH|$HUMAN_EPI_MODEL_PATH|g" $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME
 sed -i.bak "s|HUMAN_EPI_LOGS_PATH|$HUMAN_EPI_LOGS_PATH|g" $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME
 sed -i.bak "s|HUMAN_EPI_MODEL_OUTPUT_PATH|$HUMAN_EPI_MODEL_OUTPUT_PATH|g" $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME
+
+python update_config_parameters.py $GLOBAL_CONFIG_FILE $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME EPI_MODEL
 
 # Run model
 #conda activate "$MINICONDA_PATH/envs/human-epi-env"

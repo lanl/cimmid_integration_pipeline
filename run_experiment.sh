@@ -62,6 +62,7 @@ CONFIG_FILE=$2
 
 # Set base path
 BASE_PATH="$PWD"
+CONFIG_FILE="$BASE_PATH/$CONFIG_FILE"
 
 # Read paths from config file
 MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
@@ -131,7 +132,7 @@ sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 # Run mosquito pop model
 RUN_MOSQUITO_POP_MODEL() {
     echo "$(date): Running mosquito pop model.."
-    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MOSQUITO_POP_BRANCH $MINICONDA_PATH &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
+    sh run_mosqito_pop_model.sh $MOSQUITO_POP_MODEL_PATH $CONFIG_PATH $MOSQUITO_POP_CONFIG_FILENAME $MOSQUITO_POP_INPUT_PATH $MOSQUITO_POP_MODEL_OUTPUT_PATH $MOSQUITO_POP_LOGS_PATH $MOSQUITO_POP_BRANCH $MINICONDA_PATH $CONFIG_FILE &> $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out
     SUCCESS_FLAG=`tail -1 $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | grep "SUCCESS"`
     if ! [ -z "$SUCCESS_FLAG" ]; then
         echo "$(date): Mosquito pop model completed successfully."
@@ -146,7 +147,7 @@ RUN_MOSQUITO_POP_MODEL() {
 # Run Run human epi model
 RUN_HUMAN_EPI_MODEL() {
     echo "$(date): Running human epi model.."
-    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &> $HUMAN_EPI_LOGS_PATH/human_epi.out
     SUCCESS_FLAG=`cat $HUMAN_EPI_LOGS_PATH/human_epi.out | grep "ALL HPU RUNS SUCCESSFUL"`
     if ! [ -z "$SUCCESS_FLAG" ]; then
         echo "$(date): Human epi model completed successfully."

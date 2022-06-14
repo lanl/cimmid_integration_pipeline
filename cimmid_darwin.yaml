@@ -6,6 +6,13 @@ MOSQUITO_POP_MODEL:
     CONFIG_FILENAME: "mosq_config.yaml"
     OUTPUT_DIRNAME: "mosquito_pop_output"
     LOG_DIRNAME: "mosquito_pop"
+    CONFIG_FILE_PARAMETERS: # Paramters that needs to be updated from model-specific config file go here. Make sure similar nesting is used.
+        PARAMETERS:
+            MOSQ_PARAMS_STD:
+                Cutoff: 10.071
+            MOSQ_PARAMS_FITTED:
+                beta1: -37.07528363762341
+                init: 9.106769866033791
 
 EPI_MODEL:
     REPO: "git@gitlab.lanl.gov:cimmid/disease_and_human_modeling/human_epi_models.git"
@@ -14,3 +21,10 @@ EPI_MODEL:
     CONFIG_FILENAME: "human_epi_config.yaml"
     OUTPUT_DIRNAME: "human_model_output"
     LOG_DIRNAME: "human_epi"
+    CONFIG_FILE_PARAMETERS: # Paramters that needs to be updated from model-specific config file go here. Make sure similar nesting is used.
+        DATES:
+            end_year: '2006'
+        WNV:
+            PARAMETERS:
+                m: 0.801
+
