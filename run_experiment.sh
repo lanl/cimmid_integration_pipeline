@@ -17,7 +17,7 @@ PRINT_USAGE() {
     echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE"
     echo "-r: Run number (optional; positive integer)"
     echo -e "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
-    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3-py38' for Darwin)"
+    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)"
     echo "CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)\n"
 }
 
