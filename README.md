@@ -1,5 +1,7 @@
 # Toy Integration Model
 
+## How to run?
+
 When running integrated model (or experiment) first time from a new directory (or cluster), install miniconda (see instructions at https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html) and then, run following to create required directories, set up virtual environment, git clone code/models, etc.
 
     ./setup.sh PATH_TO_MINICONDA_INSTALLATION
