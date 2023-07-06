@@ -5,12 +5,15 @@
 # Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE
 # -r: Run number (optional)
 # -m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)
-# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)
-# CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)
+# MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/usr/projects/cimmid/miniconda3' for Chicoma)
+# CONFIG_FILE: Config file (e.g., cimmid_chicoma.yaml)
 ############################################################################################
 
 # load/unload modules
-module load gcc
+#module load gcc
+
+conda init bash
+source ~/.bashrc
 
 # Print script usage
 PRINT_USAGE() {
@@ -54,8 +57,7 @@ fi
 MINICONDA_PATH=$1
 export PATH="$MINICONDA_PATH/bin:$PATH"
 conda config --prepend envs_dirs "$MINICONDA_PATH/envs"
-#conda activate integration
-source activate integration
+conda activate integration
 
 # Get config file
 CONFIG_FILE=$2
@@ -65,6 +67,8 @@ BASE_PATH="$PWD"
 CONFIG_FILE="$BASE_PATH/$CONFIG_FILE"
 
 # Read paths from config file
+EXPERIMENTS_BASE_PATH=`cat $CONFIG_FILE | shyaml get-value EXPERIMENTS_BASE_PATH`
+
 MOSQUITO_POP_DIR=`cat $CONFIG_FILE | shyaml get-value MOSQUITO_POP_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 EPI_DIR=`cat $CONFIG_FILE | shyaml get-value EPI_MODEL.REPO | rev | cut -d"/" -f1 | rev | cut -d"." -f1`
 
@@ -88,7 +92,7 @@ conda deactivate
 MODELS_PATH="$BASE_PATH/models"
 MOSQUITO_POP_MODEL_PATH="$MODELS_PATH/$MOSQUITO_POP_DIR"
 HUMAN_EPI_MODEL_PATH="$MODELS_PATH/$EPI_DIR/$EPI_MODEL_DIR"
-EXPERIMENTS_PATH="$BASE_PATH/experiments"
+EXPERIMENTS_PATH="$EXPERIMENTS_BASE_PATH/experiments"
 RUNS_PATH="$EXPERIMENTS_PATH/runs"
 if [ "$RUN_NUM" == "" ]; then
     RUN_NUM=$(python get_run_num.py $RUNS_PATH 2>&1)
@@ -147,7 +151,8 @@ RUN_MOSQUITO_POP_MODEL() {
 # Run Run human epi model
 RUN_HUMAN_EPI_MODEL() {
     echo "$(date): Running human epi model.."
-    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &> $HUMAN_EPI_LOGS_PATH/human_epi.out
+    echo "sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &>> $HUMAN_EPI_LOGS_PATH/human_epi.out"
+    sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &>> $HUMAN_EPI_LOGS_PATH/human_epi.out
     SUCCESS_FLAG=`cat $HUMAN_EPI_LOGS_PATH/human_epi.out | grep "ALL HPU RUNS SUCCESSFUL"`
     if ! [ -z "$SUCCESS_FLAG" ]; then
         echo "$(date): Human epi model completed successfully."

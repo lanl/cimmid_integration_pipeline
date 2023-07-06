@@ -1,0 +1,31 @@
+PATH_TO_MINICONDA_INSTALLATION: "/usr/projects/cimmid/miniconda3"
+EXPERIMENTS_BASE_PATH: "/lustre/scratch5/nidhip/cimmid"
+
+MOSQUITO_POP_MODEL:
+    REPO: "git@github.com:lanl/mosquito_model.git"
+    BRANCH: "master"
+    CONFIG_FILENAME: "mosq_config.yaml"
+    OUTPUT_DIRNAME: "mosquito_pop_output"
+    LOG_DIRNAME: "mosquito_pop"
+    CONFIG_FILE_PARAMETERS: # Paramters that needs to be updated from model-specific config file go here. Make sure similar nesting is used.
+        PARAMETERS:
+            MOSQ_PARAMS_STD:
+                Cutoff: 10.071
+            MOSQ_PARAMS_FITTED:
+                beta1: -37.07528363762341
+                init: 9.106769866033791
+
+EPI_MODEL:
+    REPO: "git@github.com:lanl/epidemiological_model.git"
+    BRANCH: "master"
+    MODEL_DIR: "Epi_SEIR"
+    CONFIG_FILENAME: "human_epi_config.yaml"
+    OUTPUT_DIRNAME: "human_model_output"
+    LOG_DIRNAME: "human_epi"
+    CONFIG_FILE_PARAMETERS: # Paramters that needs to be updated from model-specific config file go here. Make sure similar nesting is used.
+        DATES:
+            end_year: '2006'
+        WNV:
+            PARAMETERS:
+                m: 0.801
+

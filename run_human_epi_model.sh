@@ -14,6 +14,9 @@
 # GLOBAL_CONFIG_FILE: Path to global config file (e.g., cimmid_darwin.yaml)
 ############################################################################################
 
+conda init bash
+source ~/.bashrc
+
 if [ "$#" -lt 9 ] || ! [ -d "$1" ] || ! [ -d "$2" ] || ! [ -f "$1/config/$3" ] || ! [ -d "$4" ] || ! [ -d "$5" ] || ! [ -d "$6" ] || ! [ -d "$8" ] || ! [ -f "$9" ]; then
     echo -e "ERROR!! Incorrect number or type of arguments. See usage information below:\n"
     echo "USAGE: ./run_human_epi_model.sh HUMAN_EPI_MODEL_PATH CONFIG_PATH HUMAN_EPI_CONFIG_FILENAME HUMAN_EPI_INPUT_PATH HUMAN_EPI_MODEL_OUTPUT_PATH HUMAN_EPI_LOGS_PATH MINICONDA_PATH"
@@ -60,13 +63,12 @@ sed -i.bak "s|HUMAN_EPI_MODEL_OUTPUT_PATH|$HUMAN_EPI_MODEL_OUTPUT_PATH|g" $CONFI
 python $BASE_PATH/update_config_parameters.py $GLOBAL_CONFIG_FILE $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME EPI_MODEL
 
 # Run model
-#conda activate "$MINICONDA_PATH/envs/human-epi-env"
-source activate "$MINICONDA_PATH/envs/human-epi-env"
+conda activate "$MINICONDA_PATH/envs/human-epi-env"
+#source activate "$MINICONDA_PATH/envs/human-epi-env"
 logfiles=`shopt -s nullglob dotglob; echo $HUMAN_EPI_LOGS_PATH/*`
 if [ "$logfiles" != "" ]; then
     rm $HUMAN_EPI_LOGS_PATH/*
 fi
-#sh run_human_epi_model.sh $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME 0 > $HUMAN_EPI_LOGS_PATH/human_epi.out
 sh run_LLM_human_model.sh $CONFIG_PATH/$HUMAN_EPI_CONFIG_FILENAME $HUMAN_EPI_MODEL_INPUT_PATH 0 > $HUMAN_EPI_LOGS_PATH/human_epi.out
 conda deactivate
 
