@@ -130,6 +130,10 @@ sh makedir_if_not_exists.sh $LOGS_PATH
 sh makedir_if_not_exists.sh $MOSQUITO_POP_LOGS_PATH
 sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 
+# Copy current config file to the run directory so we know which parameters are used for which run
+echo "cp $CONFIG_FILE $CURRENT_RUN_PATH/"
+cp $CONFIG_FILE $CURRENT_RUN_PATH/
+
 # Set config files
 # TO DO: Need to figure out how to set paramter values in config files.
 
@@ -151,7 +155,6 @@ RUN_MOSQUITO_POP_MODEL() {
 # Run Run human epi model
 RUN_HUMAN_EPI_MODEL() {
     echo "$(date): Running human epi model.."
-    echo "sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &>> $HUMAN_EPI_LOGS_PATH/human_epi.out"
     sh run_human_epi_model.sh $HUMAN_EPI_MODEL_PATH $CONFIG_PATH $EPI_CONFIG_FILENAME $HUMAN_EPI_INPUT_PATH $HUMAN_EPI_MODEL_OUTPUT_PATH $HUMAN_EPI_LOGS_PATH $EPI_MODEL_BRANCH $MINICONDA_PATH $CONFIG_FILE &>> $HUMAN_EPI_LOGS_PATH/human_epi.out
     SUCCESS_FLAG=`cat $HUMAN_EPI_LOGS_PATH/human_epi.out | grep "ALL HPU RUNS SUCCESSFUL"`
     if ! [ -z "$SUCCESS_FLAG" ]; then
