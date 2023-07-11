@@ -20,8 +20,8 @@ PRINT_USAGE() {
     echo "Usage: ./run_experiment.sh -r RUN_NUM -m MODEL_TO_START_FROM MINICONDA_PATH CONFIG_FILE"
     echo "-r: Run number (optional; positive integer)"
     echo -e "-m: Model to start this run from (optional; useful when some of the intial models have succeeded and need to run from the point of failure)"
-    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/projects/cimmid/miniconda3' for Darwin)"
-    echo "CONFIG_FILE: Config file (e.g., cimmid_darwin.yaml)\n"
+    echo -e "MINICONDA_PATH: Path where miniconda3 is installed (e.g., '/usr/projects/cimmid/miniconda3' for Darwin)"
+    echo "CONFIG_FILE: Config file (e.g., cimmid_chicoma.yaml)\n"
 }
 
 # Get run number from command line arguments if specified
@@ -131,11 +131,7 @@ sh makedir_if_not_exists.sh $MOSQUITO_POP_LOGS_PATH
 sh makedir_if_not_exists.sh $HUMAN_EPI_LOGS_PATH
 
 # Copy current config file to the run directory so we know which parameters are used for which run
-echo "cp $CONFIG_FILE $CURRENT_RUN_PATH/"
 cp $CONFIG_FILE $CURRENT_RUN_PATH/
-
-# Set config files
-# TO DO: Need to figure out how to set paramter values in config files.
 
 # Run mosquito pop model
 RUN_MOSQUITO_POP_MODEL() {
@@ -146,7 +142,7 @@ RUN_MOSQUITO_POP_MODEL() {
         echo "$(date): Mosquito pop model completed successfully."
     else
         echo "$(date): ERROR!! Mosquito pop model failed."
-        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $MOSQUITO_POP_LOGS_PATH/mosquito_pop.out | mail -s "CIMMID mosquito pop model run failed. Run directory is at ch-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi
@@ -161,7 +157,7 @@ RUN_HUMAN_EPI_MODEL() {
         echo "$(date): Human epi model completed successfully."
     else
         echo "$(date): ERROR!! human epi model failed."
-        cat $HUMAN_EPI_LOGS_PATH/human_epi.out | mail -s "CIMMID human epi model run failed. Run directory is at darwin-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
+        cat $HUMAN_EPI_LOGS_PATH/human_epi.out | mail -s "CIMMID human epi model run failed. Run directory is at ch-fe:$CURRENT_RUN_PATH." nidhip@lanl.gov
         # TO DO: Need to email the relevant team (instead of nidhip) on failure.
         exit
     fi
